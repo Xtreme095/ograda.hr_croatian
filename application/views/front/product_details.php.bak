@@ -1,0 +1,2183 @@
+			<nav aria-label="breadcrumb" class="breadcrumb-nav">
+				<div class="container">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/"><i class="icon-home"></i></a></li>
+						<li class="breadcrumb-item"><a href="/products">Proivodi</a></li>
+						<?php if(isset($product->category) && !empty($product->category)): ?>
+						<li class="breadcrumb-item"><a href="/products/category/<?php echo slugify($product->category); ?>"><?php echo $product->category; ?></a></li>
+						<?php endif; ?>
+						<li class="breadcrumb-item active" aria-current="page"><?php echo $product->name ?? $product->description ?? 'Product Details'; ?></li>
+					</ol>
+				</div><!-- End .container -->
+			</nav>
+
+			<div class="product-single-container product-single-default product-full-width">
+				<!-- <div class="cart-message d-none">
+					<strong class="single-cart-notice">"Metalne Ograde"</strong>
+					<span>je dodan u vašu košaricu.</span>
+				</div> -->
+				<?php 
+				// Determine image paths based on product type
+				if (isset($is_module_product) && $is_module_product) {
+					// Module product images
+					$productImagePath = 'assets/front/assets/images/no-image.jpg';
+					$productImageZoom = 'assets/front/assets/images/no-image.jpg';
+					
+					// Check if product has an image in the module's uploads
+					if (!empty($module_product['product_image'])) {
+						$moduleImagePath = 'modules/products/uploads/' . $module_product['product_image'];
+						if (file_exists(FCPATH . $moduleImagePath)) {
+							$productImagePath = $moduleImagePath;
+							$productImageZoom = $moduleImagePath;
+						}
+					}
+					
+					// Define thumbnail images (not likely to exist for module products)
+					$imageFile2 = false;
+					$imageFile3 = false;
+					$imageFile4 = false;
+					$imageFile5 = false;
+				} else {
+					// Regular shop product images
+					$productImagePath = 'assets/front/assets/images/proizvodi/' . slugify($product->description, '-') . '.jpg';
+					$productImageZoom = 'assets/front/assets/images/proizvodi/' . slugify($product->description, '-') . '-zoom.jpg';
+					
+					// Define thumbnail images
+					$imageFile2 = FCPATH . 'assets/front/assets/images/proizvodi/thumbnails/' . slugify($product->description, '-') . '-IMG2.jpg';
+					$imageFile3 = FCPATH . 'assets/front/assets/images/proizvodi/thumbnails/' . slugify($product->description, '-') . '-IMG3.jpg';
+				$imageFile4 = FCPATH . 'assets/front/assets/images/proizvodi/thumbnails/' . slugify($product->description, '-') . '-IMG4.jpg';
+				$imageFile5 = FCPATH . 'assets/front/assets/images/proizvodi/thumbnails/' . slugify($product->description, '-') . '-IMG5.jpg';
+				}
+				?>
+				<div class="container-fluid pl-lg-0 padding-right-lg">
+					<div class="row">
+						<div class="col-lg-7 product-single-gallery">
+							<div class="sidebar-wrapper">
+								<div class="product-slider-container">
+									<div class="product-single-carousel owl-carousel owl-theme show-nav-hover">
+										<div class="product-item">
+											<img class="product-single-image"
+												src="<?= base_url($productImagePath); ?>"
+												data-zoom-image="<?= base_url($productImageZoom); ?>"
+												width="915" height="915" alt="product" />
+										</div>
+										<?php if (!$is_module_product && file_exists($imageFile2)): ?>
+										<div class="product-item">
+											<img class="product-single-image"
+												src="<?= base_url('assets/front/assets/images/proizvodi/thumbnails/') .slugify($product->description,'-').'-IMG2.jpg'; ?>"
+												data-zoom-image="<?= base_url('assets/front/assets/images/proizvodi/thumbnails/') .slugify($product->description,'-').'-zoom2.jpg'; ?>"
+												width="915" height="915" alt="product" />
+										</div>
+										<?php endif; ?>
+										<?php if (!$is_module_product && file_exists($imageFile3)): ?>
+										<div class="product-item">
+											<img class="product-single-image"
+												src="<?= base_url('assets/front/assets/images/proizvodi/thumbnails/') .slugify($product->description,'-').'-IMG3.jpg'; ?>"
+												data-zoom-image="<?= base_url('assets/front/assets/images/proizvodi/thumbnails/') .slugify($product->description,'-').'-zoom3.jpg'; ?>"
+												width="915" height="915" alt="product" />
+										</div>
+										<?php endif; ?>
+										<?php if (!$is_module_product && file_exists($imageFile4)): ?>
+										<div class="product-item">
+											<img class="product-single-image"
+												src="<?= base_url('assets/front/assets/images/proizvodi/thumbnails/') .slugify($product->description,'-').'-IMG4.jpg'; ?>"
+												data-zoom-image="<?= base_url('assets/front/assets/images/proizvodi/thumbnails/') .slugify($product->description,'-').'-zoom4.jpg'; ?>"
+												width="915" height="915" alt="product" />
+										</div>
+										<?php endif; ?>
+										<?php if (!$is_module_product && file_exists($imageFile5)): ?>
+										<div class="product-item">
+											<img class="product-single-image"
+												src="<?= base_url('assets/front/assets/images/proizvodi/thumbnails/') .slugify($product->description,'-').'-IMG5.jpg'; ?>"
+												data-zoom-image="<?= base_url('assets/front/assets/images/proizvodi/thumbnails/') .slugify($product->description,'-').'-zoom5.jpg'; ?>"
+												width="915" height="915" alt="product" />
+										</div>
+										<?php endif; ?>
+									</div>
+									<!-- End .product-single-carousel -->
+									<span class="prod-full-screen">
+										<i class="icon-plus"></i>
+									</span>
+								</div>
+
+								<div class="prod-thumbnail owl-dots transparent-dots flex-column" id="carousel-custom-dots">
+									<div class="owl-dot">
+										<img src="<?php echo base_url($productImagePath); ?>" width="98" height="98"
+											alt="product" />
+									</div>
+									<?php if (!$is_module_product && file_exists($imageFile2)): ?>
+									<div class="owl-dot">
+										<img src="<?php echo base_url('assets/front/assets/images/proizvodi/thumbnails/') .slugify($product->description,'-').'-IMG2.jpg'; ?>" width="98" height="98"
+											alt="product" />
+									</div>
+									<?php endif; ?>
+									<?php if (!$is_module_product && file_exists($imageFile3)): ?>
+									<div class="owl-dot">
+										<img src="<?php echo base_url('assets/front/assets/images/proizvodi/thumbnails/') .slugify($product->description,'-').'-IMG3.jpg'; ?>" width="98" height="98"
+											alt="product" />
+									</div>
+									<?php endif; ?>
+									<?php if (!$is_module_product && file_exists($imageFile4)): ?>
+									<div class="owl-dot">
+										<img src="<?php echo base_url('assets/front/assets/images/proizvodi/thumbnails/') .slugify($product->description,'-').'-IMG4.jpg'; ?>" width="98" height="98"
+											alt="product" />
+									</div>
+									<?php endif; ?>
+									<?php if (!$is_module_product && file_exists($imageFile5)): ?>
+									<div class="owl-dot">
+										<img src="<?php echo base_url('assets/front/assets/images/proizvodi/thumbnails/') .slugify($product->description,'-').'-IMG5.jpg'; ?>" width="98" height="98"
+											alt="product" />
+									</div>
+									<?php endif; ?>
+								</div>
+							</div>
+						</div><!-- End .col-lg-6 -->
+
+						<div class="col-lg-5 pb-1">
+							<div class="single-product-custom-block">
+								<div class="porto-block">
+									<h5 class="porto-heading d-inline-block">Premium dostava</h5>
+
+									<h5 class="porto-heading d-inline-block">100% povrat novca
+										Garancija</h5>
+
+									<h5 class="porto-heading d-inline-block">Podrška 24/7</h5>
+								</div>
+							</div>
+
+							<div class="product-single-details mb-1">
+								<div class="product-title">
+									<h1><?php echo $product->description; ?></h1>
+								</div><!-- End .product-title -->
+
+								<div class="product-price-container">
+									<?php if ($is_module_product): ?>
+									<div class="product-price">
+										<?php if (isset($module_product['rate']) && $module_product['rate'] > 0): ?>
+											<?php if (isset($module_product['discount_price']) && $module_product['discount_price'] > 0): ?>
+												<span class="old-price"><?php echo $module_product['rate']; ?>€</span>
+												<span class="new-price"><?php echo $module_product['discount_price']; ?>€</span>
+											<?php else: ?>
+												<span class="new-price"><?php echo $module_product['rate']; ?>€</span>
+											<?php endif; ?>
+										<?php else: ?>
+											<span class="price-info">Cijena na upit</span>
+										<?php endif; ?>
+									</div>
+									<?php else: ?>
+									<div class="product-price">
+										<?php if(isset($product->price) && !empty($product->price)): ?>
+											<?php echo format_money($product->price); ?>
+										<?php else: ?>
+											<span class="old-price">€1,999.00</span>
+											<span class="new-price">€1,699.00</span>
+										<?php endif; ?>
+									</div>
+									<?php endif; ?>
+								</div><!-- End .product-price-container -->
+
+								<hr class="short-divider">
+
+								<?php if (!$is_module_product && $minPrice !== "Price not available" && $maxPrice !== "Price not available"): ?>
+								<div class="price-box">
+									<?php if($minPrice == $maxPrice): ?>
+									<span class="new-price" > <?php echo ceil($maxPrice); ?>.00€/m1 bez PDV-a</span>
+									<?php else: ?>
+									<span class="new-price" ><?php echo ceil($minPrice); ?>.00€ - <?php echo ceil($maxPrice); ?>.00€/m1 bez PDV-a</span>
+									<?php endif; ?>
+								</div><!-- End .price-box -->
+								<?php endif; ?>
+
+								<div class="product-desc">
+									<p>
+									<?php echo $product->long_description ?? 'Naša ograda idealan je izbor za sve koji traže dugotrajno, moderno i estetski privlačno rješenje za svoj dom ili poslovni prostor. Izrađena od visokokvalitetnog materijala, ova ograda pruža vrhunsku otpornost na koroziju, što je čini savršenom za vanjsku upotrebu u svim vremenskim uvjetima.'; ?>
+									</p>
+								</div><!-- End .product-desc -->
+
+								<ul class="single-info-list">
+									<?php if ($is_module_product && isset($module_product['sku']) && !empty($module_product['sku'])): ?>
+									<li>
+										SKU: <strong><?php echo $module_product['sku']; ?></strong>
+									</li>
+									<?php elseif(isset($product->sku) && !empty($product->sku)): ?>
+									<li>
+										SKU: <strong><?php echo $product->sku; ?></strong>
+									</li>
+									<?php endif; ?>
+
+									<li>
+										KATEGORIJA: <strong><a href="#" class="product-category"><?php echo $product->category ?? 'OGRADE'; ?></a></strong>
+									</li>
+								</ul>
+
+								<div class="product-filters-container">
+									<div class="product-options-wrapper">
+										<?php
+										// Get material variants
+										$materials = [];
+										$hasMaterialVariants = false;
+										if (!empty($variations)) {
+											foreach ($variations as $variation) {
+												if ($variation->variation_name === 'Vrsta materijala') {
+													$materials[] = $variation->variation_value;
+													$hasMaterialVariants = true;
+												}
+											}
+										}
+										
+										// Get height variants
+										$heights = [];
+										$hasHeightVariants = false;
+										if (!empty($variations)) {
+											foreach ($variations as $variation) {
+												if ($variation->variation_name === 'Visina') {
+													// Extract numeric value for sorting
+													$numericValue = (int)preg_replace('/[^0-9]/', '', $variation->variation_value);
+													$heights[$numericValue] = $variation->variation_value;
+													$hasHeightVariants = true;
+												}
+											}
+										}
+										
+										// Sort heights numerically if present
+										if (!empty($heights)) {
+											ksort($heights);
+										}
+										?>
+										
+										<?php if ($hasMaterialVariants): ?>
+										<div class="option-section material-section">
+											<label class="variant__label">
+										<?php
+												// Get the variant name from the database
+												$materialVariantName = "VRSTA MATERIJALA";
+												if (!empty($variations)) {
+													foreach ($variations as $variation) {
+														if ($variation->variation_name === 'Vrsta materijala') {
+															$materialVariantName = strtoupper($variation->variation_name);
+															break;
+														}
+													}
+												}
+												?>
+												<b><?php echo $materialVariantName; ?></b>
+											</label>
+											<div class="material-options">
+											<?php
+												// Define image paths for materials
+												$materialImages = [
+													'Pocinčani čelik' => 'assets/front/assets/images/materials/galvanized_steel.jpg',
+													'Aluminij' => 'assets/front/assets/images/materials/aluminum.jpg',
+													'Nehrđajući čelik-inox' => 'assets/front/assets/images/materials/stainless_steel.jpg'
+												];
+												
+												foreach ($materials as $index => $material): 
+												$isFirst = ($index === 0) ? 'selected-material' : '';
+													$imagePath = isset($materialImages[$material]) ? 
+														$materialImages[$material] : 'assets/front/assets/images/material/no-material.webp';
+												?>
+												<div class="material-option <?php echo $isFirst; ?>" data-attrib="<?php echo $material; ?>">
+													<img src="<?php echo base_url($imagePath); ?>" alt="<?php echo $material; ?>">
+													<span><?php echo $material; ?></span>
+											</div>
+												<?php endforeach; ?>
+											</div>
+											</div>
+											<?php endif; ?>
+
+										<?php if ($hasHeightVariants): ?>
+										<div class="option-section height-section">
+											<label class="variant__label">
+											<?php
+												// Get the variant name from the database
+												$heightVariantName = "VISINA:";
+												if (!empty($variations)) {
+													foreach ($variations as $variation) {
+														if ($variation->variation_name === 'Visina') {
+															$heightVariantName = strtoupper($variation->variation_name) . ":";
+															break;
+														}
+													}
+												}
+												?>
+												<span><?php echo $heightVariantName; ?></span>
+												<b class="selected-height-display">180cm</b>
+													</label>
+											<div class="height-options">
+												<?php
+												// Find the default selected height
+												$defaultHeight = '180cm';
+												$defaultFound = false;
+												
+												foreach ($heights as $numericHeight => $displayHeight):
+													// Check if this is the default height (180cm) or closest match
+													$isSelected = '';
+													if (strpos($displayHeight, '180') !== false || 
+														(!$defaultFound && strpos($displayHeight, '120') !== false)) {
+														$isSelected = 'selected-height';
+														$defaultHeight = $displayHeight;
+														$defaultFound = true;
+													}
+												?>
+												<div class="height-option <?php echo $isSelected; ?>" data-attrib="<?php echo $displayHeight; ?>">
+													<?php echo $displayHeight; ?>
+											</div>
+												<?php endforeach; ?>
+											</div>
+											<script>
+												// Update the selected height display on page load
+												document.addEventListener('DOMContentLoaded', function() {
+													const selectedHeight = document.querySelector('.height-option.selected-height');
+													if (selectedHeight) {
+														document.querySelector('.selected-height-display').textContent = selectedHeight.dataset.attrib;
+													}
+												});
+											</script>
+											</div>
+											<?php endif; ?>	
+											</div>
+
+									<div class="product-action">
+										<?php if ($hasMaterialVariants || $hasHeightVariants): ?>
+										<div class="price-box">
+											<div class="price-display-row">
+												<span class="total-price">Ukupno</span>
+												<div class="product-material-height-price">99.00€</div>
+											</div>
+											<div class="quantity-wrapper">
+												<label class="quantity-label">Količina</label>
+												<div class="quantity-container">
+													<button type="button" class="quantity-btn decrease" aria-label="Decrease quantity" style="width: 40px !important; height: 40px !important; padding: 0 !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important;"></button>
+													<input type="number" class="quantity-input" value="1" min="1" max="100" step="1">
+													<button type="button" class="quantity-btn increase" aria-label="Increase quantity" style="width: 40px !important; height: 40px !important; padding: 0 !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important;"></button>
+											</div>
+											</div>
+											</div>
+										<?php else: ?>
+										<div class="price-box">
+											<div class="price-display-row">
+												<?php if(isset($product->price) && !empty($product->price)): ?>
+												<span class="total-price">Ukupno</span>
+												<div class="product-material-height-price"><?php echo format_money($product->price); ?></div>
+												<?php else: ?>
+												<span class="total-price">Cijena na upit</span>
+												<div class="product-material-height-price">Kontaktirajte nas</div>
+											<?php endif; ?>	
+											</div>
+											<div class="product-action-container">
+												<div class="quantity-wrapper">
+													<label class="quantity-label">Količina</label>
+													<div class="quantity-container">
+														<button type="button" class="quantity-btn decrease" aria-label="Decrease quantity" style="width: 40px !important; height: 40px !important; padding: 0 !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important;"></button>
+														<input type="number" class="quantity-input" value="1" min="1" max="100" step="1">
+														<button type="button" class="quantity-btn increase" aria-label="Increase quantity" style="width: 40px !important; height: 40px !important; padding: 0 !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important;"></button>
+											</div>
+									</div>
+													</div>
+												</div>
+										
+										<div class="product-action-container">
+											<div class="quantity-wrapper">
+												<label class="quantity-label">Količina</label>
+												<div class="quantity-container">
+													<button type="button" class="quantity-btn decrease" aria-label="Decrease quantity" style="width: 40px !important; height: 40px !important; padding: 0 !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important;"></button>
+													<input type="number" class="quantity-input" value="1" min="1" max="100" step="1">
+													<button type="button" class="quantity-btn increase" aria-label="Increase quantity" style="width: 40px !important; height: 40px !important; padding: 0 !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important;"></button>
+											</div>
+												</div>
+													</div>
+												<?php endif; ?>
+										
+										<button class="btn btn-block btn-brown" id="submitOrder">Naručite</button>
+									</div>
+								</div>
+								
+								<hr class="divider mb-0 mt-0">
+
+								<div class="product-single-share custom-product-single-share">
+									<label class="sr-only">Share:</label>
+
+									<div class="social-icons mt-3">
+										<a href="https://www.facebook.com/p/Ogradahr-61567005054532/" class="social-icon social-facebook icon-facebook" target="_blank"
+											title="Facebook"></a>
+										<a href="#" class="social-icon social-twitter icon-twitter" target="_blank"
+											title="Twitter"></a>
+										<a href="#" class="social-icon social-linkedin fab fa-linkedin-in"
+											target="_blank" title="Linkedin"></a>
+										<a href="#" class="social-icon social-gplus fab fa-google-plus-g"
+											target="_blank" title="Google +"></a>
+										<a href="#" class="social-icon social-mail icon-mail-alt" target="_blank"
+											title="Mail"></a>
+									</div><!-- End .social-icons -->
+								</div><!-- End .product single-share -->
+
+								<a href="wishlist.html"
+									class="btn-icon-wish add-wishlist justify-content-start mb-lg-0 mb-1"
+									title="Add to Wishlist"><i class="icon-wishlist-2"></i><span>Dodaj na listu želja</span>
+									
+								</a>
+								<div class="logo_freesample">
+									<p class="fixed_position_for_scroll"></p>
+									<div class="deliverylogo">
+										<span>
+										<img src="https://cdn.shopify.com/s/files/1/0520/1670/9803/files/van_760cb8c3-6260-49eb-acdc-be3fb191cfeb.svg?v=1704544042">
+										</span>
+
+										
+										<span class="text-span"><b> Premium dostava</b> vlastitim vozilima</span>
+										
+									</div>
+									<div class="deliverylogo">
+										<span>
+										<img src="https://cdn.shopify.com/s/files/1/0520/1670/9803/files/click_and_collect.svg?v=1704544043">
+										</span>
+										
+										<span class="text-span"><b>Klik i preuzimanje</b> za robu na stanju sljedeći radni dan.</span>
+										
+									</div>
+								</div>
+								<div class="trustpilot_contact">
+								<div class="trust_badge bggrey_border">
+									<p>Izvrsne recenzije</p>
+									<div class="ratings-container second-ratings">
+										<div class="product-ratings">
+											<span class="ratings" style="width:90%"></span><!-- End .ratings -->
+											<span class="tooltiptext tooltip-top"></span>
+										</div><!-- End .product-ratings -->
+										<a href="#" class="rating-link">( 5 Recenzije )</a>
+									</div><!-- End .ratings-container -->
+								</div>
+									<div class="contact_in bggrey_border">
+										<p>Trebate pomoć?<br>
+										Nazovite <a href="tel:+385912001500">+385 912001500</a><br>
+										<span>08:00 - 16:00 - 5 dana u tjednu</span>
+										</p>
+									</div>
+								</div>
+							</div><!-- End .product-single-details -->
+
+
+						</div><!-- End .col-lg-6 -->
+					</div><!-- End .row -->
+				</div><!-- End .product-single-container -->
+				<?php @include('cart.php') ?>
+			</div>
+			
+			<div class="container-fluid">
+				<div class="product-single-tabs">
+					<ul class="nav nav-tabs" role="tablist">
+						<li class="nav-item">
+							<a class="nav-link active" id="product-tab-desc" data-toggle="tab"
+								href="#product-desc-content" role="tab" aria-controls="product-desc-content"
+								aria-selected="true">Opis</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link" id="product-tab-size" data-toggle="tab"
+								href="#product-size-content" role="tab" aria-controls="product-size-content"
+								aria-selected="true">Veličina ograde</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link" id="product-tab-reviews" data-toggle="tab"
+								href="#product-reviews-content" role="tab"
+								aria-controls="product-reviews-content" aria-selected="false">Recenzije
+								(5)</a>
+						</li>
+					</ul>
+
+					<div class="tab-content">
+						<div class="tab-pane fade show active" id="product-desc-content" role="tabpanel"
+							aria-labelledby="product-tab-desc">
+							<div class="product-desc-content">
+								<p class="mb-1">
+								<?php echo $product->long_description ?? 'Naša ograda idealan je izbor za sve koji traže dugotrajno, moderno i estetski privlačno rješenje za svoj dom ili poslovni prostor. Izrađena od visokokvalitetnog materijala, ova ograda pruža vrhunsku otpornost na koroziju, što je čini savršenom za vanjsku upotrebu u svim vremenskim uvjetima.'; ?>
+								</p>
+
+
+								<img src="<?= base_url('assets/front/assets/images/proizvodi/') .slugify($product->description,'-').'-IMG2.jpg'; ?>" alt="<?php echo $product->name ?? 'product image'; ?>"
+									class="float-right" />
+
+								<ul>
+									<?php if(isset($product->features) && is_array($product->features)): ?>
+										<?php foreach($product->features as $feature): ?>
+											<li><?php echo $feature; ?></li>
+										<?php endforeach; ?>
+									<?php else: ?>
+									<li>Sve vrste proizvoda koje želite - jednostavno, konfigurabilno</li>
+									<li>Proizvodi koji se mogu preuzeti/digitalni proizvodi, virtualni proizvodi</li>
+									<li>Upravljanje zalihama s nenaručenim artiklima</li>
+									<?php endif; ?>
+								</ul>
+
+								<div class="row justify-content-center">
+									<div class="col-sm-6 col-xl-4">
+										<div class="feature-box feature-box-simple text-center">
+											<div class="feature-icon">
+												<i class="fa fa-star"></i>
+											</div>
+
+											<div class="feature-box-content">
+												<h3>Namjenska usluga</h3>
+												<p>Za pomoć oko narudžbe obratite se našim stručnjacima,
+												prilagođavanje ili savjet o dizajnu</p>
+											</div><!-- End .feature-box-content -->
+										</div><!-- End .feature-box -->
+									</div><!-- End .col-md-4 -->
+
+									<div class="col-sm-6 col-xl-4">
+										<div class="feature-box feature-box-simple text-center">
+											<div class="feature-icon">
+												<i class="fa fa-reply"></i>
+											</div>
+
+											<div class="feature-box-content">
+												<h3>Besplatan povrat</h3>
+												<p>Za pomoć oko narudžbe obratite se našim stručnjacima,
+												prilagođavanje ili savjet o dizajnu</p>
+											</div><!-- End .feature-box-content -->
+										</div><!-- End .feature-box -->
+									</div><!-- End .col-md-4 -->
+
+									<div class="col-sm-6 col-xl-4">
+										<div class="feature-box feature-box-simple text-center">
+											<div class="feature-icon">
+												<i class="fa fa-paper-plane"></i>
+											</div>
+
+											<div class="feature-box-content">
+												<h3>Međunarodna dostava</h3>
+												<p>Za pomoć oko narudžbe obratite se našim stručnjacima,
+												prilagođavanje ili savjet o dizajnu</p>
+											</div><!-- End .feature-box-content -->
+										</div><!-- End .feature-box -->
+									</div><!-- End .col-md-4 -->
+								</div><!-- End .row -->
+
+								<p>
+								<?php echo $product->short_description ?? 'Aluminijska ograda ne samo da osigurava sigurnost i privatnost, već daje i moderan izgled vašem objektu. Prilagodite svoj prostor našim raznovrsnim modelima koji odgovaraju vašem stilu i potrebama.'; ?>
+								</p>
+							</div><!-- End .product-desc-content -->
+						</div><!-- End .tab-pane -->
+
+						<div class="tab-pane fade" id="product-size-content" role="tabpanel"
+							aria-labelledby="product-tab-size">
+							<div class="product-size-content">
+								<div class="row">
+									<div class="col-md-6 product-details specifications">
+										<h3>Specifikacije</h3>
+										<ul>
+											<?php if(isset($product->specifications) && is_array($product->specifications) && !empty($product->specifications)): ?>
+												<?php foreach($product->specifications as $spec_name => $spec_value): ?>
+												<li>
+													<span><?php echo $spec_name; ?></span>
+													<span><?php echo $spec_value; ?></span>
+												</li>
+												<?php endforeach; ?>
+											<?php else: ?>
+											<li>
+												<span>Width</span>
+												<span>180cm</span>
+											</li>
+
+											<li>
+												<span>Height</span>
+												<span class="specificationheight">
+													<span class="specificationheightin">220 </span>cm
+												</span>
+											</li>
+
+											<li>
+												<span>Slat Thickness</span>
+												<span>18mm</span>
+											</li>
+											<li>
+												<span>Slat Height</span>
+
+												<span>30cm</span>
+
+											</li>
+											<li>
+												<span>Slat Width</span>
+												<span>180cm</span>
+											</li>
+
+											<li>
+												<span>Total fence width</span>
+												<span>192cm</span>
+											</li>
+											<li>
+												<span>Post Centre To Centre</span>
+												<span>184cm</span>
+											</li>
+											<li>
+												<span>Post Depth</span>
+												<span>8cm</span>
+											</li>
+											<li>
+												<span>Post Height</span>
+
+
+												<span class="specifications_post_height">220 cm</span>
+											</li>
+											<li>
+												<span>Post Width</span>
+												<span>8cm</span>
+											</li>
+											<?php endif; ?>
+										</ul>
+									</div>
+									<div class="col-md-6">
+										<img src="<?= base_url('assets/front/assets/images/products/product_details.svg'); ?>"
+											alt="product specifications">
+									</div><!-- End .col-md-4 -->
+
+
+								</div><!-- End .row -->
+							</div><!-- End .product-size-content -->
+						</div><!-- End .tab-pane -->
+
+						<div class="tab-pane fade" id="product-reviews-content" role="tabpanel"
+							aria-labelledby="product-tab-reviews">
+							<div class="product-reviews-content">
+								<!-- <h3 class="reviews-title">1 recenzija za "Mila Maslina"</h3> -->
+
+								<div class="comment-list">
+									<div class="comments">
+										<!-- <figure class="img-thumbnail">
+											<img src="<?= base_url('assets/front/assets/images/blog/author.jpg'); ?>" alt="author" width="80"
+												height="80">
+										</figure> -->
+
+										<div class="comment-block">
+											<div class="comment-header">
+												<div class="comment-arrow"></div>
+
+												<div class="ratings-container float-sm-right">
+													<div class="product-ratings">
+														<span class="ratings" style="width:100%"></span>
+														<!-- End .ratings -->
+														<span class="tooltiptext tooltip-top"></span>
+													</div><!-- End .product-ratings -->
+												</div>
+
+												<span class="comment-by">
+													<strong>Ana M.</strong>
+												</span>
+											</div>
+
+											<div class="comment-content">
+												<p>
+												Iskustvo s ovom bravarskom tvrtkom je bilo izvanredno. Naša nova ograda je apsolutno savršena - precizno izrađena, čvrsta i estetski privlačna. Cijenimo njihovu posvećenost detaljima i stručnost, te ih toplo preporučujemo svima koji traže vrhunsku bravarsku uslugu.</p>
+											</div>
+										</div>
+										<div class="comment-block">
+											<div class="comment-header">
+												<div class="comment-arrow"></div>
+
+												<div class="ratings-container float-sm-right">
+													<div class="product-ratings">
+														<span class="ratings" style="width:100%"></span>
+														<!-- End .ratings -->
+														<span class="tooltiptext tooltip-top"></span>
+													</div><!-- End .product-ratings -->
+												</div>
+
+												<span class="comment-by">
+													<strong>Darko M.</strong>
+												</span>
+											</div>
+
+											<div class="comment-content">
+												<p>Ova tvrtka je pravi izbor za one koji traže pouzdane i kreativne bravarske usluge. Njihove stepenice u našoj kući su nevjerojatno lijepa i funkcionalna. Tim je bio susretljiv, kompetentan i prilagodljiv našim potrebama. Hvala vam na izvrsnom radu!</p>
+											</div>
+										</div>
+										<div class="comment-block">
+											<div class="comment-header">
+												<div class="comment-arrow"></div>
+
+												<div class="ratings-container float-sm-right">
+													<div class="product-ratings">
+														<span class="ratings" style="width:90%"></span>
+														<!-- End .ratings -->
+														<span class="tooltiptext tooltip-top"></span>
+													</div><!-- End .product-ratings -->
+												</div>
+
+												<span class="comment-by">
+													<strong>Martina K.</strong>
+												</span>
+											</div>
+
+											<div class="comment-content">
+												<p>
+												Nemam dovoljno riječi hvale za ovu bravarsku tvrtku. Naša nova ograda je čisto remek-djelo - elegantna, čvrsta i prilagođena našem dvorištu. Profesionalnost i ljubaznost zaposlenika su nas oduševile. Ako tražite vrhunsku obrtničku kvalitetu, ovo je pravo mjesto za vas.					</p>
+											</div>
+										</div>
+										<div class="comment-block">
+											<div class="comment-header">
+												<div class="comment-arrow"></div>
+
+												<div class="ratings-container float-sm-right">
+													<div class="product-ratings">
+														<span class="ratings" style="width:90%"></span>
+														<!-- End .ratings -->
+														<span class="tooltiptext tooltip-top"></span>
+													</div><!-- End .product-ratings -->
+												</div>
+
+												<span class="comment-by">
+													<strong>Marko P.</strong>
+												</span>
+											</div>
+
+											<div class="comment-content">
+												<p>
+												Radujem se što mogu podijeliti svoje pozitivno iskustvo s ovom tvrtkom. Naša metalna konstrukcija izgleda izvanredno i pokazuje visokokvalitetnu izradu. Tim je bio profesionalan, brz i pažljiv. Svaka preporuka za njihove usluge!</p>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="divider"></div>
+
+								<div class="add-product-review">
+									<h3 class="review-title">Dodajte komentar</h3>
+
+									<form action="#" class="comment-form m-0">
+										<div class="rating-form">
+											<label for="rating">Vaša ocjena<span
+													class="required">*</span></label>
+											<span class="rating-stars">
+												<a class="star-1" href="#">1</a>
+												<a class="star-2" href="#">2</a>
+												<a class="star-3" href="#">3</a>
+												<a class="star-4" href="#">4</a>
+												<a class="star-5" href="#">5</a>
+											</span>
+
+											<select name="rating" id="rating" required=""
+												style="display: none;">
+												<option value="">Rate…</option>
+												<option value="5">Perfect</option>
+												<option value="4">Good</option>
+												<option value="3">Average</option>
+												<option value="2">Not that bad</option>
+												<option value="1">Very poor</option>
+											</select>
+										</div>
+
+										<div class="form-group">
+											<label>Vaša recenzija<span class="required">*</span></label>
+											<textarea cols="5" rows="6"
+												class="form-control form-control-sm"></textarea>
+										</div><!-- End .form-group -->
+
+
+										<div class="row">
+											<div class="col-md-6 col-xl-12">
+												<div class="form-group">
+													<label>Ime <span class="required">*</span></label>
+													<input type="text" class="form-control form-control-sm"
+														required>
+												</div><!-- End .form-group -->
+											</div>
+
+											<div class="col-md-6 col-xl-12">
+												<div class="form-group">
+													<label>Email <span class="required">*</span></label>
+													<input type="text" class="form-control form-control-sm"
+														required>
+												</div><!-- End .form-group -->
+											</div>
+
+											<div class="col-md-6 col-xl-12">
+												<div class="custom-control custom-checkbox">
+													<input type="checkbox" class="custom-control-input"
+														id="save-name" />
+													<label class="custom-control-label mb-0"
+														for="save-name">Sačuvaj moje
+														ime, e-pošta i web stranicu u ovom pregledniku za
+														sljedeći put </label>
+												</div>
+											</div>
+										</div>
+
+										<input type="submit" class="btn btn-primary" value="Pošalji">
+									</form>
+								</div><!-- End .add-product-review -->
+							</div><!-- End .product-reviews-content -->
+						</div><!-- End .tab-pane -->
+					</div><!-- End .tab-content -->
+				</div><!-- End .product-single-tabs -->
+				<!-- New section -->
+				<div id="shopify-section-product-multi-images-features" class="shopify-section index-section-pro">
+					<section id="section-product-multi-images-features" class="wrapper-image-text">
+						<div class="page-width">
+							<div class="section-header">
+								<h3 class="header section-h">Zašto izabrati <?php echo isset($product->category) ? strtolower($product->category) : 'naše ograde'; ?></h3>
+							</div>
+						</div>
+						<div class="page-width">
+							<div class="image_with_text_pro hidden-phone">
+								<div class="image_with_text_pro-in">
+									<?php if(isset($product->benefits) && is_array($product->benefits) && !empty($product->benefits)): ?>
+										<?php foreach(array_slice($product->benefits, 0, 3) as $index => $benefit): ?>
+										<div class="feature-row-pro aos-init aos-animate">
+											<div class="feature-row__item_pro">
+												<div class="image-wrap-pro">
+													<img class="feature-row__image-pro lazyloaded" src="<?php echo isset($benefit['image']) ? base_url($benefit['image']) : base_url('assets/front/assets/images/product-details/feature-'.($index+1).'.jpg'); ?>" alt="<?php echo $benefit['title'] ?? ''; ?>">
+												</div>
+											</div>
+											<div class="feature-row__item-pro feature-row__text-pro feature-row__text--left">
+												<p class="h3"><?php echo $benefit['title'] ?? ''; ?></p>
+												<div class="rte featured-row__subtext">
+													<p><?php echo $benefit['description'] ?? ''; ?></p>
+												</div>
+											</div>
+										</div>
+										<?php endforeach; ?>
+									<?php else: ?>
+									<div class="feature-row-pro aos-init aos-animate">
+										<div class="feature-row__item_pro">
+											<div class="image-wrap-pro">
+												<img class="feature-row__image-pro lazyloaded" src="<?php echo base_url('assets/front/assets/images/product-details/waterproof.jpg'); ?>" alt="">
+											</div>
+										</div>
+										<div class="feature-row__item-pro feature-row__text-pro feature-row__text--left">
+											<p class="h3">Otporan na vremenske uvjete</p>
+											<div class="rte featured-row__subtext">
+												<p>Budite uvjereni da će vaši proizvodi izgledati dobro bez obzira na kišu ili sunce. Naš čvrsti kompozit otporan je na truljenje i plijesan, a njegova ugrađena UV zaštita osigurava da njegova lijepa boja neće izblijediti na suncu.</p>
+											</div>
+										</div>
+									</div>
+									<div class="feature-row-pro aos-init aos-animate">
+										<div class="feature-row__item_pro">
+											<div class="image-wrap-pro">
+												<img class="feature-row__image-pro lazyloaded" src="<?php echo base_url('assets/front/assets/images/product-details/low_maintenance.jpg'); ?>" alt="">
+											</div>
+										</div>
+										<div class="feature-row__item-pro feature-row__text-pro feature-row__text--left">
+											<p class="h3">Nisko održavanje</p>
+											<div class="rte featured-row__subtext">
+												<p>Naš kompozit se lako čisti i nikada ga nećete morati bojati, tretirati ili mrljati, tako da ćete provesti više vremena uživajući u svom prostoru.</p>
+											</div>
+										</div>
+									</div>
+									<div class="feature-row-pro aos-init aos-animate">
+										<div class="feature-row__item_pro">
+											<div class="image-wrap-pro">
+												<img class="feature-row__image-pro lazyloaded" src="<?php echo base_url('assets/front/assets/images/product-details/fence-hardwearing.jpg'); ?>" alt="">
+											</div>
+										</div>
+										<div class="feature-row__item-pro feature-row__text-pro feature-row__text--left">
+											<p class="h3">Otporan</p>
+											<div class="rte featured-row__subtext">
+												<p>Naš kompozit je iznimno izdržljiv i neće se iskriviti, što naše proizvode čini jakim i čvrstim, ali i elegantnim.</p>
+											</div>
+										</div>
+									</div>
+									<?php endif; ?>
+								</div>
+
+								<div class="featured-img --gid://shopify/MediaImage/31213304185048">
+									<img src="<?php echo base_url('assets/front/assets/images/proizvodi/') .slugify($product->description,'-').'.jpg'; ?>">
+								</div>
+
+								<div class="image_with_text_pro-in">
+									<?php if(isset($product->benefits) && is_array($product->benefits) && count($product->benefits) > 3): ?>
+										<?php foreach(array_slice($product->benefits, 3, 3) as $index => $benefit): ?>
+									<div class="feature-row-pro aos-init">
+										<div class="feature-row__item-pro feature-row__text-pro feature-row__text--right">
+												<p class="h3"><?php echo $benefit['title'] ?? ''; ?></p>
+											<div class="rte featured-row__subtext">
+													<p><?php echo $benefit['description'] ?? ''; ?></p>
+											</div>
+										</div>
+										<div class="feature-row__item_pro">
+											<div class="image-wrap-pro">
+													<img class="feature-row__image-pro lazyloaded" src="<?php echo isset($benefit['image']) ? base_url($benefit['image']) : base_url('assets/front/assets/images/product-details/feature-'.($index+4).'.jpg'); ?>" alt="<?php echo $benefit['title'] ?? ''; ?>">
+											</div>
+										</div>
+									</div>
+										<?php endforeach; ?>
+									<?php else: ?>
+									<div class="feature-row-pro aos-init">
+										<div class="feature-row__item-pro feature-row__text-pro feature-row__text--right">
+											<p class="h3">Završna obrada letvica</p>
+											<div class="rte featured-row__subtext">
+												<p>Naše potpuno vodootporne letvice debljine 18 mm imaju duboku završnu obradu od drveta s obje strane.</p>
+											</div>
+										</div>
+										<div class="feature-row__item_pro">
+											<div class="image-wrap-pro">
+												<img class="feature-row__image-pro lazyloaded" src="<?php echo base_url('assets/front/assets/images/product-details/slat_finish.jpg'); ?>" alt="">
+											</div>
+										</div>
+									</div>
+									<div class="feature-row-pro aos-init">
+										<div class="feature-row__item-pro feature-row__text-pro feature-row__text--right">
+											<p class="h3">Prilagodljiv</p>
+											<div class="rte featured-row__subtext">
+												<p>Naše kompozitne proizvode možete izrezati na veličinu koju trebate bez ugrožavanja njihovog strukturalnog integriteta.</p>
+											</div>
+										</div>
+										<div class="feature-row__item_pro">
+											<div class="image-wrap-pro">
+												<img class="feature-row__image-pro lazyloaded" src="<?php echo base_url('assets/front/assets/images/product-details/product-5-big.jpg'); ?>" alt="">
+											</div>
+										</div>
+									</div>
+									<div class="feature-row-pro aos-init">
+										<div class="feature-row__item-pro feature-row__text-pro feature-row__text--right">
+											<p class="h3">Ekološki prihvatljiv</p>
+											<div class="rte featured-row__subtext">
+												<p>Sve naše letvice proizvedene su od reciklirane plastike. Koristimo ekvivalentnu težinu od 80 velikih plastičnih boca recikliranih u svaku letvicu.</p>
+											</div>
+										</div>
+										<div class="feature-row__item_pro">
+											<div class="image-wrap-pro">
+												<img class="feature-row__image-pro lazyloaded" src="<?php echo base_url('assets/front/assets/images/product-details/eco-friendly.jpg'); ?>" alt="">
+											</div>
+										</div>
+											</div>
+									<?php endif; ?>
+										</div>
+									</div>
+						</div>
+					</section>
+				</div>
+				<!-- the end new section -->
+				<div class="row faq-section">
+					<div class="col-lg-6">
+						<h2 class="mb-1">Često postavljana pitanja</h2>
+						<div id="accordion">
+							<?php if(isset($product->faqs) && is_array($product->faqs) && !empty($product->faqs)): ?>
+								<?php foreach($product->faqs as $index => $faq): ?>
+									<div class="card card-accordion">
+										<a class="card-header <?php echo ($index > 0) ? 'collapsed' : ''; ?>" href="#" data-toggle="collapse" data-target="#collapse<?php echo $index+1; ?>"
+											aria-expanded="<?php echo ($index === 0) ? 'true' : 'false'; ?>" aria-controls="collapse<?php echo $index+1; ?>">
+											<?php echo $faq['question']; ?>
+										</a>
+
+										<div id="collapse<?php echo $index+1; ?>" class="collapse <?php echo ($index === 0) ? 'show' : ''; ?>" data-parent="#accordion">
+											<p><?php echo $faq['answer']; ?></p>
+										</div>
+									</div>
+								<?php endforeach; ?>
+							<?php else: ?>
+							<div class="card card-accordion">
+								<a class="card-header" href="#" data-toggle="collapse" data-target="#collapseOne"
+									aria-expanded="true" aria-controls="collapseOne">
+									Koje su prednosti metalnih, staklenih i čeličnih ograda?
+								</a>
+
+								<div id="collapseOne" class="collapse show" data-parent="#accordion">
+									<p>Metalne ograde pružaju dugotrajnost, sigurnost i klasičan izgled.
+										Staklene ograde nude moderan, elegantan dizajn s neometanim pogledom.
+										Čelične ograde su jake, dugotrajne i zahtijevaju minimalno održavanje.</p>
+								</div>
+							</div>
+
+							<div class="card card-accordion">
+								<a class="card-header collapsed" href="#" data-toggle="collapse"
+									data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseOne">
+									Kako odabrati pravu ogradu za svoj posjed?
+								</a>
+
+								<div id="collapseTwo" class="collapse" data-parent="#accordion">
+									<p>Razmotrite svoje primarne potrebe: sigurnost, estetiku ili privatnost.
+										Metalne i čelične ograde idealne su za visoku sigurnost.
+										Staklene ograde savršene su za bazene, balkone ili modernu estetiku.</p>
+								</div>
+							</div>
+
+							<div class="card card-accordion">
+								<a class="card-header collapsed" href="#" data-toggle="collapse"
+									data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+									Jesu li ove ograde prilagodljive?
+								</a>
+
+								<div id="collapseThree" class="collapse" data-parent="#accordion">
+									<p>Da! Možete odabrati različite visine, boje i stilove prema svojim dizajnerskim željama.</p>
+								</div>
+							</div>
+
+							<div class="card card-accordion">
+								<a class="card-header collapsed" href="#" data-toggle="collapse"
+									data-target="#collapseFour" aria-expanded="true" aria-controls="collapseThree">
+									Jesu li ove ograde otporne na vremenske uvjete?
+								</a>
+
+								<div id="collapseFour" class="collapse" data-parent="#accordion">
+									<p>Da! Dizajnirane su da izdrže kišu, vjetar i izloženost suncu. Staklene ograde imaju UV zaštitu koja sprječava blijeđenje..</p>
+								</div>
+							</div>
+
+							<div class="card card-accordion">
+								<a class="card-header collapsed" href="#" data-toggle="collapse"
+									data-target="#collapseFive" aria-expanded="true" aria-controls="collapseThree">
+									Hrđaju li metalne i čelične ograde?
+								</a>
+
+								<div id="collapseFive" class="collapse" data-parent="#accordion">
+									<p>Naše su ograde obložene zaštitom od hrđe, no redovito održavanje im produljuje vijek trajanja.</p>
+								</div>
+							</div>
+							<?php endif; ?>
+						</div>
+					</div>
+					<div class="col-lg-6">
+						<img class="faq-image" src="<?php echo base_url('assets/front/assets/images/proizvodi/') .slugify($product->description,'-').'.jpg'; ?>" alt="<?php echo $product->name ?? 'product image'; ?>" />
+					</div>
+				</div>
+				<div class="get-free-sample-wrapper above-brand-highlights" style="background-image: url('<?= base_url('assets/front/assets/images/contact-details-bg.png') ?>');background-repeat: no-repeat;background-position: right;background-size: contain;">
+					<div class="page-width">
+						<div class="free-sample-product">
+						<p><b>Dopustite da vas vodimo</b> Naši stručnjaci rado će vam pomoći pronaći ono što vam je potrebno.</p>
+
+						<div class="inwrp">
+							
+							<p class="wrp">
+							<a class="btn-link" href="tel:+385912001500"><span>Nazovite sada</span> <span class="nmber">+385912001500</span></a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>
+				<div class="get-free-sample-wrapper above-brand-highlights mobile" style="background-image: url('<?= base_url('assets/front/assets/images/option_b-mobile.png') ?>');background-repeat: no-repeat;background-position: right;background-size: contain;">
+					<div class="page-width">
+						<div class="free-sample-product">
+						<p><b>Dopustite da vas vodimo</b> Naši stručnjaci rado će vam pomoći pronaći ono što vam je potrebno.</p>
+
+						<div class="inwrp">
+							
+							<p class="wrp">
+							<a class="btn-link" href="tel:+385912001500"><span>Nazovite sada</span> <span class="nmber">+385 912001500</span></a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="products-section pt-0">
+					<h2 class="section-title">Srodni proizvodi</h2>
+					
+					<div class="products-slider related-products owl-carousel owl-theme dots-top dots-small">
+					
+					<?php
+						$availableProducts = [];
+
+						foreach ($products as $product) {
+							$imagePath = 'assets/front/assets/images/proizvodi/' . slugify($product->description, '-') . '.jpg';
+							$imageFullPath = FCPATH . $imagePath;
+
+							if (file_exists($imageFullPath)) {
+								$availableProducts[] = $product;
+							}
+						}
+
+						if (!empty($availableProducts)) {
+							shuffle($availableProducts);
+							$randomProducts = array_slice($availableProducts, 0, min(4, count($availableProducts))); 
+						} else {
+							$randomProducts = [];
+						}
+
+						foreach ($randomProducts as $randomProduct): 
+							$imagePath = 'assets/front/assets/images/proizvodi/' . slugify($randomProduct->description, '-') . '.jpg';
+
+							$oldPrice = ceil($randomProduct->rate * 1.25); 
+					?>
+						<div class="product-default">
+							<figure>
+								<a href="<?= site_url('ograda/' . slugify($randomProduct->description)) ?>">
+									<img class="first-part-img" src="<?php echo base_url() . $imagePath; ?>" style="width:300px; height:300px; margin: auto;"
+										alt="product">
+									<img class="second-part-img" src="<?php echo base_url() . $imagePath; ?>" style= "width:300px; height:350px; margin: auto;"
+										alt="product">
+								</a>
+								<div class="label-group">
+									<div class="product-label label-hot">HOT</div>
+									<div class="product-label label-sale">-20%</div>
+								</div>
+							</figure>
+							<div class="product-details">
+								<div class="category-list">
+									<a href="<?= site_url('ograda/' . slugify($randomProduct->description)) ?>" class="product-category">OGRADE</a>
+								</div>
+								<h3 class="product-title">
+									<a href="<?= site_url('ograda/' . slugify($randomProduct->description)) ?>"><?php echo $randomProduct->description; ?></a>
+								</h3>
+								<div class="ratings-container">
+									<div class="product-ratings">
+										<span class="ratings" style="width:80%"></span><!-- End .ratings -->
+										<span class="tooltiptext tooltip-top"></span>
+									</div><!-- End .product-ratings -->
+								</div><!-- End .product-container -->
+								<?php if ( $randomProduct->rate > 0): ?>
+								<div class="price-box">
+									<del class="old-price"><?php echo $oldPrice; ?>€</del>
+									<span class="product-price"><?php echo $randomProduct->rate; ?>€</span>
+								</div><!-- End .price-box -->
+								<?php endif; ?>
+
+								<div class="product-action">
+									<!-- <a href="wishlist.html" title="Wishlist" class="btn-icon-wish"><i
+											class="icon-heart"></i></a> -->
+									<a href="<?= site_url('ograda/' . slugify($randomProduct->description)) ?>" class="btn-icon btn-add-cart"><i
+											class="fa fa-arrow-right"></i><span>SELECT
+											OPTIONS</span></a>
+									<!-- <a href="<?= base_url('ajax/product-quick-view.html'); ?>" class="btn-quickview" title="Quick View"><i
+											class="fas fa-external-link-alt"></i></a> -->
+								</div>
+							</div><!-- End .product-details -->
+						</div>
+						<?php  
+						 endforeach; ?>
+
+					</div><!-- End .products-slider -->
+				</div>
+			</div><!-- End .products-section -->
+			<?php @include('flash-popup.php'); ?>
+			<!-- End .main -->
+<script>
+    
+    const navItems = document.querySelectorAll("li.color-item");
+    navItems.forEach(item => {
+        item.addEventListener("click", function() {
+            navItems.forEach(li => li.classList.remove("active"));
+            this.classList.add("active");
+        });
+    });
+
+
+	const material = document.querySelectorAll("div.manageipv.variant-input.current_active");
+	material.forEach(item => {
+		item.addEventListener ("click", function() {
+			material.forEach(div => div.classList.remove('selected-material'));
+			this.classList.add('selected-material');
+		})
+	});
+
+	const height = document.querySelectorAll("div.manageipv.variant-input.current_active");
+	material.forEach(item => {
+		item.addEventListener ("click", function() {
+			material.forEach(div => div.classList.remove('active'));
+			this.classList.add('active');
+		})
+	});
+
+	const materialStandard = document.querySelectorAll("div.manageipv.variant-input.current_active");
+	material.forEach(item => {
+		item.addEventListener ("click", function() {
+			materialStandard.forEach(div => div.classList.remove('selected-material-standard'));
+			this.classList.add('selected-material-standard');
+		})
+	});
+
+</script>
+
+<script>
+$(document).ready(function() {
+    // Initialize base price from PHP
+    const basePrice = <?php echo isset($product->rate) ? $product->rate : '0'; ?>;
+    
+    function updatePrice() {
+        const quantity = parseInt($('.quantity-input').val()) || 1;
+        const total = basePrice * quantity;
+        
+        if (!isNaN(total) && total > 0) {
+            $('.product-material-height-price').text(
+                quantity > 1 ? 
+                `${basePrice.toFixed(2)}€/kom (${total.toFixed(2)}€ ukupno)` : 
+                `${basePrice.toFixed(2)}€`
+            );
+            $('#selected_rate').val(total);
+            $('#selected_quantity').val(quantity);
+        } else {
+            $('.product-material-height-price').text("Cijena na upit");
+            $('#selected_rate').val('0');
+        }
+    }
+
+    // Quantity controls
+    $('.decrease').click(function() {
+        let value = parseInt($('.quantity-input').val()) || 1;
+        if (value > 1) {
+            $('.quantity-input').val(value - 1);
+            updatePrice();
+        }
+    });
+
+    $('.increase').click(function() {
+        let value = parseInt($('.quantity-input').val()) || 1;
+        if (value < 100) {
+            $('.quantity-input').val(value + 1);
+            updatePrice();
+        }
+    });
+
+    $('.quantity-input').on('input', function() {
+        let value = parseInt($(this).val()) || 1;
+        value = Math.max(1, Math.min(100, value));
+        $(this).val(value);
+        updatePrice();
+    });
+
+    // Material selection
+    $('.material-option').click(function() {
+        $('.material-option').removeClass('selected-material');
+        $(this).addClass('selected-material');
+        $('#selected_material').val($(this).data('attrib'));
+        updatePrice();
+    });
+
+    // Height selection
+    $('.height-option').click(function() {
+        $('.height-option').removeClass('selected-height');
+        $(this).addClass('selected-height');
+        $('.selected-height-display').text($(this).data('attrib'));
+        $('#selected_height').val($(this).data('attrib'));
+        updatePrice();
+    });
+
+    // Initial price update
+    updatePrice();
+});
+</script>
+
+<script>
+	$(document).ready(function () {
+        var reviews = $(".comment-block");
+        var randomIndex = Math.floor(Math.random() * reviews.length);
+        
+        reviews.hide();
+        
+        reviews.eq(randomIndex).show();
+    });
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Remove webfont.js dependency since it's not found
+    // Add FontAwesome from CDN instead for icons
+    if (!document.getElementById('font-awesome-css')) {
+        const fontAwesome = document.createElement('link');
+        fontAwesome.id = 'font-awesome-css';
+        fontAwesome.rel = 'stylesheet';
+        fontAwesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+        document.head.appendChild(fontAwesome);
+    }
+
+    // Quantity input handling
+    const quantityInput = document.querySelector('.quantity-input');
+    const decreaseBtn = document.querySelector('.decrease');
+    const increaseBtn = document.querySelector('.increase');
+    
+    // Initialize variant data from PHP
+    const variants = <?php 
+        $variantData = [];
+        if (!empty($variations)) {
+            foreach ($variations as $variation) {
+                if ($variation->variation_name === 'Visina') {
+                    // Remove 'cm' and convert to number for clean comparison
+                    $value = preg_replace('/[^0-9]/', '', $variation->variation_value);
+                    $variantData['heights'][$value] = [
+                        'price' => floatval($variation->rate),
+                        'name' => $variation->variation_value
+                    ];
+                }
+                if ($variation->variation_name === 'Vrsta materijala') {
+                    $variantData['materials'][$variation->variation_value] = [
+                        'price' => floatval($variation->rate),
+                        'name' => $variation->variation_value
+                    ];
+                }
+            }
+        }
+        echo json_encode($variantData);
+    ?>;
+
+    let selectedHeight = document.querySelector(".selected-height")?.dataset.attrib;
+    let selectedMaterial = document.querySelector(".selected-material")?.dataset.attrib;
+
+    // Height selection
+    document.querySelectorAll(".height-option").forEach(option => {
+        option.addEventListener('click', function() {
+            selectedHeight = this.dataset.attrib;
+            document.querySelectorAll(".height-option").forEach(el => el.classList.remove("selected-height"));
+            this.classList.add("selected-height");
+            document.querySelector(".selectec_variant_value").textContent = selectedHeight;
+            updatePrice();
+        });
+    });
+
+    // Material selection
+    document.querySelectorAll(".material-option").forEach(option => {
+        option.addEventListener('click', function() {
+            selectedMaterial = this.dataset.attrib;
+            document.querySelectorAll(".material-option").forEach(el => el.classList.remove("selected-material"));
+            this.classList.add("selected-material");
+            updatePrice();
+        });
+    });
+
+    // Quantity buttons
+    decreaseBtn.addEventListener('click', function() {
+        let value = parseInt(quantityInput.value);
+        if (value > 1) {
+            quantityInput.value = value - 1;
+            updatePrice();
+        }
+    });
+
+    increaseBtn.addEventListener('click', function() {
+        let value = parseInt(quantityInput.value);
+        if (value < 100) {
+            quantityInput.value = value + 1;
+            updatePrice();
+        }
+    });
+
+    quantityInput.addEventListener('input', function() {
+        let value = parseInt(this.value);
+        if (isNaN(value) || value < 1) {
+            this.value = 1;
+        } else if (value > 100) {
+            this.value = 100;
+        }
+        updatePrice();
+    });
+
+    function updatePrice() {
+        if (selectedHeight && selectedMaterial && variants.heights && variants.materials) {
+            // Get the height value without 'cm' for comparison
+            const heightValue = selectedHeight.replace(/[^0-9]/g, '');
+            
+            // Get base price from height variant
+            let basePrice = variants.heights[heightValue]?.price || 0;
+            
+            // Get material variant price
+            let materialPrice = variants.materials[selectedMaterial]?.price || 0;
+            
+            // Calculate price per piece (base price + material price)
+            let pricePerPiece = basePrice + materialPrice;
+            
+            // Apply quantity
+            let quantity = parseInt(quantityInput.value) || 1;
+            let total = pricePerPiece * quantity;
+            
+            // Update price display with both per piece and total
+            const priceDisplay = document.querySelector(".product-material-height-price");
+            if (quantity > 1) {
+                priceDisplay.textContent = pricePerPiece.toFixed(2) + "€/kom (" + total.toFixed(2) + "€ ukupno)";
+                        } else {
+                priceDisplay.textContent = pricePerPiece.toFixed(2) + "€";
+            }
+        }
+    }
+
+    // Initialize carousels if jQuery and OwlCarousel are available
+    if (typeof $ !== 'undefined' && $.fn.owlCarousel) {
+        // Product images carousel
+        $('.product-single-carousel').owlCarousel({
+            items: 1,
+            nav: true,
+            dots: false,
+            navText: ['<i class="icon-angle-left">', '<i class="icon-angle-right">'],
+            responsive: {
+                0: { items: 1 },
+                480: { items: 1 },
+                1200: { items: 1 }
+            }
+        });
+
+        // Related products carousel
+        $('.products-slider').owlCarousel({
+            loop: true,
+            margin: 20,
+            responsiveClass: true,
+            nav: true,
+            navText: ['<i class="icon-angle-left">', '<i class="icon-angle-right">'],
+            dots: true,
+            autoplay: false,
+            autoplayTimeout: 15000,
+            items: 4,
+            responsive: {
+                0: { items: 1 },
+                480: { items: 2 },
+                768: { items: 3 },
+                992: { items: 4 }
+            }
+        });
+
+        // Handle thumbnail clicks
+        $('.owl-dot').on('click', function() {
+            var index = $(this).index();
+            $('.product-single-carousel').trigger('to.owl.carousel', [index, 300]);
+            $('.owl-dot').removeClass('active');
+            $(this).addClass('active');
+        });
+    }
+
+    // Initialize tabs
+    if (typeof $ !== 'undefined') {
+        $('.nav-tabs a').on('click', function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
+    }
+
+    // Initial price calculation
+    updatePrice();
+});
+</script>
+
+<style>
+/* Update styles to use modern forced-colors-mode instead of -ms-high-contrast */
+@media (forced-colors: active) {
+    .quantity-btn,
+    .btn-brown,
+    .nav-link,
+    .product-action .btn-icon {
+        forced-color-adjust: none;
+    }
+}
+
+/* Existing styles */
+.product-action-container {
+    margin-top: 1rem;
+}
+
+.quantity-label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.quantity-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quantity-input {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.quantity-btn {
+    width: 40px;
+    height: 40px;
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quantity-btn:hover {
+    background: #e4e4e4;
+}
+
+.quantity-btn i {
+    font-size: 14px;
+    color: #666;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Remove preload warnings by adding correct 'as' attributes */
+link[rel="preload"] {
+    as: style;
+}
+link[rel="preload"][href*=".js"] {
+    as: script;
+}
+link[rel="preload"][href*=".woff"] {
+    as: font;
+    crossorigin: anonymous;
+}
+
+/* Price and quantity styling */
+.price-box {
+    margin-bottom: 2rem;
+}
+
+.price-box .total-price {
+    font-size: 2.2rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.8rem;
+    color: #222529;
+}
+
+.price-box .product-material-height-price {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #222529;
+    line-height: 1.4;
+}
+
+.quantity-label {
+    font-size: 2.2rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 1.2rem;
+    color: #222529;
+}
+
+.quantity-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.quantity-input {
+    width: 100px;
+    height: 55px;
+    text-align: center;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1.8rem;
+    font-weight: 500;
+}
+
+.quantity-btn {
+    width: 55px;
+    height: 55px;
+    background: #f4f4f4;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.quantity-btn:hover {
+    background: #e4e4e4;
+    border-color: #ccc;
+}
+
+.quantity-btn i {
+    font-size: 20px;
+    color: #444;
+}
+
+/* Improve focus states for accessibility */
+.quantity-input:focus,
+.quantity-btn:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.product-options-wrapper {
+    padding: 20px 0;
+}
+
+.category-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.option-section {
+    margin-bottom: 30px;
+}
+
+.variant__label {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #000;
+    text-transform: uppercase;
+    background: #fff;
+    padding: 10px 15px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.variant__label b {
+    font-weight: 600;
+    color: #000;
+}
+
+.variant__label span + b {
+    margin-left: 0.5rem;
+    color: #28a745;
+}
+
+.material-options {
+    display: flex;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.material-option {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.3s ease;
+    min-width: 150px;
+}
+
+.material-option img {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+    object-fit: contain;
+}
+
+.material-option span {
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+}
+
+.material-option.selected-material {
+    border-color: #28a745;
+    background-color: #f8fff9;
+}
+
+.height-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.height-option {
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    color: #333;
+}
+
+.height-option.selected-height {
+    border-color: #28a745;
+    background-color: #f8fff9;
+    font-weight: 600;
+}
+
+.selected-height-display {
+    margin-left: 10px;
+    color: #28a745;
+}
+
+.price-box {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.total-price {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.product-material-height-price {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+}
+
+.quantity-container {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.quantity-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+.quantity-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.quantity-input {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.btn-brown {
+    margin-top: 20px;
+    background-color: #795548;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 4px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.btn-brown:hover {
+    background-color: #5d4037;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .material-options {
+        flex-direction: column;
+    }
+    
+    .material-option {
+        width: 100%;
+    }
+    
+    .height-options {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    }
+}
+
+/* Override existing styles with more specific selectors */
+.product-options-wrapper .variant__label,
+.product-filters-container .variant__label,
+.option-section .variant__label,
+label.variant__label {
+    display: flex !important;
+    align-items: center !important;
+    font-size: 16px !important;
+    margin-bottom: 15px !important;
+    color: #000 !important;
+    text-transform: uppercase !important;
+    background: #fff !important;
+    padding: 10px 15px !important;
+    border-radius: 4px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+}
+
+.variant__label b {
+    font-weight: 600 !important;
+    color: #000 !important;
+}
+
+.variant__label span + b {
+    margin-left: 0.5rem !important;
+    color: #28a745 !important;
+}
+
+.product-options-wrapper {
+    padding: 20px 0;
+}
+
+.price-display-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.price-display-row .total-price {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 0;
+    font-weight: 500;
+}
+
+.price-display-row .product-material-height-price {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    text-align: right;
+}
+
+.quantity-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+.quantity-btn i {
+    font-size: 16px;
+    color: #333;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Material selection
+    const materialOptions = document.querySelectorAll('.material-option');
+    materialOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            materialOptions.forEach(opt => opt.classList.remove('selected-material'));
+            this.classList.add('selected-material');
+            
+            // Update hidden input for form submission
+            const selectedMaterialInput = document.getElementById('selected_material');
+            if (selectedMaterialInput) {
+                selectedMaterialInput.value = this.dataset.attrib;
+            }
+            
+            updatePrice();
+        });
+    });
+
+    // Height selection
+    const heightOptions = document.querySelectorAll('.height-option');
+    const heightDisplay = document.querySelector('.selected-height-display');
+    heightOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            heightOptions.forEach(opt => opt.classList.remove('selected-height'));
+            this.classList.add('selected-height');
+            heightDisplay.textContent = this.dataset.attrib;
+            
+            // Update the display in other places if needed
+            const variantValue = document.querySelector('.selectec_variant_value');
+            if (variantValue) {
+                variantValue.textContent = this.dataset.attrib;
+            }
+            
+            // Update hidden input for form submission
+            const selectedHeightInput = document.getElementById('selected_height');
+            if (selectedHeightInput) {
+                selectedHeightInput.value = this.dataset.attrib;
+            }
+            
+            updatePrice();
+        });
+    });
+
+    // Quantity controls
+    const quantityInput = document.querySelector('.quantity-input');
+    const decreaseBtn = document.querySelector('.decrease');
+    const increaseBtn = document.querySelector('.increase');
+
+    decreaseBtn.addEventListener('click', function() {
+        let value = parseInt(quantityInput.value);
+        if (value > 1) {
+            quantityInput.value = value - 1;
+            updatePrice();
+        }
+    });
+
+    increaseBtn.addEventListener('click', function() {
+        let value = parseInt(quantityInput.value);
+        if (value < 100) {
+            quantityInput.value = value + 1;
+            updatePrice();
+        }
+    });
+
+    quantityInput.addEventListener('input', function() {
+        let value = parseInt(this.value);
+        if (isNaN(value) || value < 1) {
+            this.value = 1;
+        } else if (value > 100) {
+            this.value = 100;
+        }
+        updatePrice();
+    });
+
+    function updatePrice() {
+        const selectedMaterial = document.querySelector('.material-option.selected-material');
+        const selectedHeight = document.querySelector('.height-option.selected-height');
+        const quantity = parseInt(quantityInput.value) || 1;
+        
+        if (selectedMaterial && selectedHeight) {
+            // Here you would typically make an AJAX call to get the price
+            // For now, we'll use a simple calculation
+            const basePrice = 99.00; // Base price in euros
+            const priceDisplay = document.querySelector('.product-material-height-price');
+            const total = basePrice * quantity;
+            
+            if (quantity > 1) {
+                priceDisplay.textContent = `${basePrice.toFixed(2)}€/kom (${total.toFixed(2)}€ ukupno)`;
+            } else {
+                priceDisplay.textContent = `${basePrice.toFixed(2)}€`;
+            }
+        }
+    }
+
+    // Initialize price on page load
+    updatePrice();
+	});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Ensure Font Awesome is loaded
+    if (!document.querySelector('link[href*="font-awesome"]')) {
+        const fontAwesome = document.createElement('link');
+        fontAwesome.rel = 'stylesheet';
+        fontAwesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+        document.head.appendChild(fontAwesome);
+    }
+
+    // Check if icons are rendered properly after a short delay
+    setTimeout(function() {
+        const plusIcon = document.querySelector('.increase i');
+        const minusIcon = document.querySelector('.decrease i');
+        
+        // If icons are not showing correctly, replace with text
+        if (plusIcon && !plusIcon.offsetWidth) {
+            plusIcon.parentNode.innerHTML = '+';
+        }
+        if (minusIcon && !minusIcon.offsetWidth) {
+            minusIcon.parentNode.innerHTML = '-';
+        }
+    }, 500);
+    });
+</script>
+
+<style>
+/* Quantity button styles */
+.quantity-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.quantity-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    min-width: 80px;
+}
+
+.quantity-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quantity-btn {
+    width: 40px;
+    height: 40px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: normal;
+    color: #333;
+    line-height: 1;
+    padding: 0;
+    transition: background-color 0.3s ease;
+    font-family: Arial, sans-serif;
+}
+
+.quantity-btn.increase {
+    font-size: 24px;
+    line-height: 22px;
+}
+
+.quantity-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.quantity-input {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    margin: 0;
+}
+
+/* Remove browser's default number input spinners */
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.quantity-input[type=number] {
+    -moz-appearance: textfield;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const quantityInput = document.querySelector('.quantity-input');
+    const decreaseBtn = document.querySelector('.decrease');
+    const increaseBtn = document.querySelector('.increase');
+    
+    function updateQuantity(change) {
+        let currentValue = parseInt(quantityInput.value) || 1;
+        let newValue = currentValue + (change);
+        
+        // Ensure value stays within min and max bounds
+        newValue = Math.max(1, Math.min(100, newValue));
+        
+        if (quantityInput.value !== newValue.toString()) {
+            quantityInput.value = newValue;
+            updatePrice();
+        }
+    }
+
+    decreaseBtn?.addEventListener('click', () => updateQuantity(-1));
+    increaseBtn?.addEventListener('click', () => updateQuantity(1));
+    
+    quantityInput?.addEventListener('input', function() {
+        let value = parseInt(this.value) || 1;
+        value = Math.max(1, Math.min(100, value));
+        this.value = value;
+        updatePrice();
+    });
+
+    // Initial update
+    updatePrice();
+});
+
+function updatePrice() {
+    const quantity = parseInt(document.querySelector('.quantity-input')?.value) || 1;
+    const basePrice = <?php echo isset($product->rate) ? $product->rate : '0'; ?>;
+    const total = basePrice * quantity;
+    
+    const priceDisplay = document.querySelector('.product-material-height-price');
+    if (priceDisplay) {
+        if (!isNaN(total) && total > 0) {
+            priceDisplay.textContent = quantity > 1 ? 
+                `${basePrice.toFixed(2)}€/kom (${total.toFixed(2)}€ ukupno)` : 
+                `${basePrice.toFixed(2)}€`;
+        } else {
+            priceDisplay.textContent = "Cijena na upit";
+        }
+    }
+}
+</script>
+
+<div class="quantity-container">
+    <button type="button" class="quantity-btn decrease" aria-label="Decrease quantity" style="width: 40px !important; height: 40px !important; padding: 0 !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important;"></button>
+    <input type="number" class="quantity-input" value="1" min="1" max="100" step="1">
+    <button type="button" class="quantity-btn increase" aria-label="Increase quantity" style="width: 40px !important; height: 40px !important; padding: 0 !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important;"></button>
+</div>
+
+<style>
+.quantity-container button.quantity-btn {
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background-color: #545454 !important;
+    border: 1px solid #545454 !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #ffffff !important;
+}
+
+.quantity-container button.quantity-btn:hover {
+    background-color: #444444 !important;
+    border-color: #444444 !important;
+}
+
+.quantity-container button.quantity-btn::before {
+    display: block !important;
+    font-size: 24px !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #ffffff !important;
+}
+
+.quantity-container button.quantity-btn.decrease::before {
+    content: '−' !important;
+}
+
+.quantity-container button.quantity-btn.increase::before {
+    content: '+' !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add FontAwesome from CDN for icons
+    if (!document.getElementById('font-awesome-css')) {
+        const fontAwesome = document.createElement('link');
+        fontAwesome.id = 'font-awesome-css';
+        fontAwesome.rel = 'stylesheet';
+        fontAwesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+        document.head.appendChild(fontAwesome);
+    }
+
+    // Initialize quantity controls
+    const quantityInput = document.querySelector('.quantity-input');
+    const decreaseBtn = document.querySelector('.decrease');
+    const increaseBtn = document.querySelector('.increase');
+    
+    function updateQuantity(change) {
+        let currentValue = parseInt(quantityInput.value) || 1;
+        let newValue = currentValue + change;
+        newValue = Math.max(1, Math.min(100, newValue));
+        quantityInput.value = newValue;
+        quantityInput.dispatchEvent(new Event('change'));
+    }
+
+    decreaseBtn?.addEventListener('click', () => updateQuantity(-1));
+    increaseBtn?.addEventListener('click', () => updateQuantity(1));
+    quantityInput?.addEventListener('input', function() {
+        let value = parseInt(this.value) || 1;
+        this.value = Math.max(1, Math.min(100, value));
+        });
+    });
+</script>
+
+<?php
+// Define image paths for materials with proper path checking
+$materialImages = [
+    'Pocinčani čelik' => 'assets/front/assets/images/materials/galvanized_steel.jpg',
+    'Aluminij' => 'assets/front/assets/images/materials/aluminum.jpg',
+    'Nehrđajući čelik-inox' => 'assets/front/assets/images/materials/stainless_steel.jpg'
+];
