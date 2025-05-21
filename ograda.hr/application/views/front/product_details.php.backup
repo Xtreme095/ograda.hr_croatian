@@ -1,0 +1,4503 @@
+<?php @include('header_product.php') ?>
+
+<script>
+// This script will run when the document is loaded
+// and will handle the quantity controls and price calculation
+window.addEventListener('DOMContentLoaded', function() {
+    // Check if quantity buttons have already been initialized
+    if (window.quantityButtonsInitialized) {
+        return;
+    }
+    window.quantityButtonsInitialized = true;
+    
+    // Quantity control functionality
+    document.querySelectorAll('.quantity-container').forEach(function(container) {
+        const quantityInput = container.querySelector('.quantity-input');
+        const decreaseBtn = container.querySelector('.decrease');
+        const increaseBtn = container.querySelector('.increase');
+        
+        if (!quantityInput || !decreaseBtn || !increaseBtn) return;
+        
+        // Clear any existing content in buttons to prevent double signs
+        decreaseBtn.innerHTML = '';
+        increaseBtn.innerHTML = '';
+        
+        // Set step attribute explicitly to 1
+        quantityInput.setAttribute('step', '1');
+        
+        // Decrease button event handler
+        decreaseBtn.addEventListener('click', function() {
+            let value = parseInt(quantityInput.value) || 1;
+            if (value > 1) {
+                value -= 1; // Decrement by exactly 1
+                quantityInput.value = value;
+                updateProductPrice(value);
+            }
+        });
+        
+        // Increase button event handler
+        increaseBtn.addEventListener('click', function() {
+            let value = parseInt(quantityInput.value) || 1;
+            value += 1; // Increment by exactly 1
+            quantityInput.value = value;
+            updateProductPrice(value);
+        });
+        
+        // Input event handler for direct changes
+        quantityInput.addEventListener('input', function() {
+            let value = parseInt(this.value) || 1;
+            if (value < 1) {
+                value = 1;
+                this.value = value;
+            }
+            updateProductPrice(value);
+        });
+    });
+});
+
+// Function to update product price based on quantity
+function updateProductPrice(quantity) {
+    const basePrice = <?php echo isset($module_product['rate']) ? $module_product['rate'] : 0; ?>;
+    
+    // Calculate total price
+    const totalPrice = basePrice * quantity;
+    
+    // Update price display
+    const priceDisplay = document.querySelector('.product-material-height-price');
+    if (priceDisplay && totalPrice > 0) {
+        if (quantity > 1) {
+            priceDisplay.textContent = `${basePrice.toFixed(2)}€/kom (${totalPrice.toFixed(2)}€ ukupno)`;
+        } else {
+            priceDisplay.textContent = `${basePrice.toFixed(2)}€`;
+        }
+    }
+}
+
+// Material option selection
+document.querySelectorAll('.material-option').forEach(function(option) {
+    option.addEventListener('click', function() {
+        document.querySelectorAll('.material-option').forEach(function(el) {
+            el.classList.remove('selected-material');
+        });
+        this.classList.add('selected-material');
+        
+        // Update price if needed
+        const quantityInput = document.querySelector('.quantity-input');
+        if (quantityInput) {
+            updateProductPrice(parseInt(quantityInput.value) || 1);
+        }
+    });
+});
+
+// Glass type selection
+document.querySelectorAll('.glass-option').forEach(function(option) {
+    option.addEventListener('click', function() {
+        document.querySelectorAll('.glass-option').forEach(function(el) {
+            el.classList.remove('selected-glass');
+        });
+        this.classList.add('selected-glass');
+        
+        // Update price if needed
+        const quantityInput = document.querySelector('.quantity-input');
+        if (quantityInput) {
+            updateProductPrice(parseInt(quantityInput.value) || 1);
+        }
+    });
+});
+
+// Height option selection
+document.querySelectorAll('.height-option').forEach(function(option) {
+    option.addEventListener('click', function() {
+        document.querySelectorAll('.height-option').forEach(function(el) {
+            el.classList.remove('selected-height');
+        });
+        this.classList.add('selected-height');
+        
+        // Update height display
+        const displayElement = document.querySelector('.selected-height-display');
+        if (displayElement) {
+            displayElement.textContent = this.dataset.attrib;
+        }
+        
+        // Update price if needed
+        const quantityInput = document.querySelector('.quantity-input');
+        if (quantityInput) {
+            updateProductPrice(parseInt(quantityInput.value) || 1);
+        }
+    });
+});
+
+// Initialize price
+const quantityInput = document.querySelector('.quantity-input');
+if (quantityInput) {
+    updateProductPrice(parseInt(quantityInput.value) || 1);
+}
+});
+
+// Script to handle quantity buttons
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all decrease and increase buttons
+    const decreaseButtons = document.querySelectorAll('.decrease-btn');
+    const increaseButtons = document.querySelectorAll('.increase-btn');
+    
+    // Add event listeners to decrease buttons
+    decreaseButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const input = this.closest('.quantity-controls').querySelector('.quantity-input');
+            let value = parseInt(input.value) || 1;
+            if (value > 1) {
+                value--;
+                input.value = value;
+                // Trigger change event to update price if needed
+                input.dispatchEvent(new Event('change'));
+            }
+        });
+    });
+    
+    // Add event listeners to increase buttons
+    increaseButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const input = this.closest('.quantity-controls').querySelector('.quantity-input');
+            let value = parseInt(input.value) || 1;
+            value++;
+            input.value = value;
+            // Trigger change event to update price if needed
+            input.dispatchEvent(new Event('change'));
+        });
+    });
+    
+    // Set default values for all quantity inputs
+    document.querySelectorAll('.quantity-input').forEach(input => {
+        input.value = 1;
+        input.setAttribute('min', '1');
+        input.setAttribute('step', '1');
+    });
+});
+</script>
+
+			<nav aria-label="breadcrumb" class="breadcrumb-nav">
+				<div class="container">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/"><i class="icon-home"></i></a></li>
+						<li class="breadcrumb-item"><a href="/products">Proivodi</a></li>
+						<?php if(isset($product->category) && !empty($product->category)): ?>
+						<li class="breadcrumb-item"><a href="/products/category/<?php echo slugify($product->category); ?>"><?php echo $product->category; ?></a></li>
+						<?php endif; ?>
+						<li class="breadcrumb-item active" aria-current="page"><?php echo $product->name ?? $product->description ?? 'Product Details'; ?></li>
+					</ol>
+				</div><!-- End .container -->
+			</nav>
+
+			<div class="product-single-container product-single-default product-full-width">
+				<!-- <div class="cart-message d-none">
+					<strong class="single-cart-notice">"Metalne Ograde"</strong>
+					<span>je dodan u vašu košaricu.</span>
+				</div> -->
+				<?php 
+				// Determine image paths based on product type
+				if (isset($is_module_product) && $is_module_product) {
+					// Default image paths
+					$productImagePath = 'modules/products/uploads/image-not-available.png';
+					$productImageZoom = 'modules/products/uploads/image-not-available.png';
+					
+					// Check main product image in a more efficient way
+					if (!empty($module_product['product_image'])) {
+						$moduleImagePath = 'modules/products/uploads/' . $module_product['product_image'];
+						if (file_exists(FCPATH . $moduleImagePath)) {
+							$productImagePath = $moduleImagePath;
+							$productImageZoom = $moduleImagePath;
+						}
+					}
+					
+					// Get additional images more efficiently
+					$additionalImages = [];
+					
+					// Method 1: Check for product_image_1, product_image_2, etc. fields
+					for ($i = 1; $i <= 5; $i++) {
+						$imgField = "product_image_{$i}";
+						if (isset($module_product[$imgField]) && !empty($module_product[$imgField])) {
+							$imgPath = 'modules/products/uploads/' . $module_product[$imgField];
+							// Skip file_exists check here - we'll check just before display
+							$additionalImages[] = $imgPath;
+						}
+					}
+					
+					// Method 2: Only check for naming pattern if no additional images found yet
+					if (empty($additionalImages) && !empty($module_product['product_image'])) {
+						$fileInfo = pathinfo($module_product['product_image']);
+						$baseName = $fileInfo['filename'];
+						$extension = isset($fileInfo['extension']) ? '.' . $fileInfo['extension'] : '';
+						
+						// Batch prepare potential image paths
+						$potentialImages = [];
+						for ($i = 1; $i <= 5; $i++) {
+							$potentialImages[] = 'modules/products/uploads/' . $baseName . '_' . $i . $extension;
+						}
+						
+						// Batch check file existence
+						foreach ($potentialImages as $imgPath) {
+							if (file_exists(FCPATH . $imgPath)) {
+								$additionalImages[] = $imgPath;
+							}
+						}
+					}
+				} else {
+					// Regular product image paths - non-module products
+					$productImagePath = 'assets/front/assets/images/proizvodi/' . slugify($product->description, '-') . '.jpg';
+					$productImageZoom = 'assets/front/assets/images/proizvodi/' . slugify($product->description, '-') . '-zoom.jpg';
+					
+					// Check if main image exists
+					if (!file_exists(FCPATH . $productImagePath)) {
+						$productImagePath = 'assets/front/assets/images/no-image.jpg';
+						$productImageZoom = 'assets/front/assets/images/no-image.jpg';
+					}
+					
+					// Define thumbnail images - only prepare paths, check existence when needed
+					$imageFiles = [
+						'imageFile2' => 'assets/front/assets/images/proizvodi/thumbnails/' . slugify($product->description, '-') . '-IMG2.jpg',
+						'imageFile3' => 'assets/front/assets/images/proizvodi/thumbnails/' . slugify($product->description, '-') . '-IMG3.jpg',
+						'imageFile4' => 'assets/front/assets/images/proizvodi/thumbnails/' . slugify($product->description, '-') . '-IMG4.jpg',
+						'imageFile5' => 'assets/front/assets/images/proizvodi/thumbnails/' . slugify($product->description, '-') . '-IMG5.jpg'
+					];
+				}
+				?>
+				<div class="container-fluid pl-lg-0 padding-right-lg">
+					<div class="row">
+						<div class="col-lg-7 product-single-gallery">
+							<div class="sidebar-wrapper">
+								<div class="product-slider-container">
+									<div class="product-single-carousel owl-carousel owl-theme show-nav-hover">
+										<div class="product-item">
+											<img class="product-single-image"
+												src="<?= base_url($productImagePath); ?>"
+												data-zoom-image="<?= base_url($productImageZoom); ?>"
+												width="915" height="915" alt="<?= htmlspecialchars($product->description ?? 'product'); ?>" />
+										</div>
+										
+										<?php if ($is_module_product && !empty($additionalImages)): ?>
+											<?php foreach ($additionalImages as $imgPath): ?>
+												<?php if (file_exists(FCPATH . $imgPath)): ?>
+											<div class="product-item">
+												<img class="product-single-image"
+													src="<?= base_url($imgPath); ?>"
+													data-zoom-image="<?= base_url($imgPath); ?>"
+													width="915" height="915" alt="<?= htmlspecialchars($product->description ?? 'product'); ?>" />
+											</div>
+												<?php endif; ?>
+											<?php endforeach; ?>
+										<?php endif; ?>
+										
+										<?php if (!$is_module_product): ?>
+											<?php foreach ($imageFiles as $key => $path): ?>
+												<?php if (file_exists(FCPATH . $path)): ?>
+										<div class="product-item">
+											<img class="product-single-image"
+												src="<?= base_url($path); ?>"
+												data-zoom-image="<?= base_url(str_replace('-IMG', '-zoom', $path)); ?>"
+												width="915" height="915" alt="<?= htmlspecialchars($product->description ?? 'product'); ?>" />
+										</div>
+												<?php endif; ?>
+											<?php endforeach; ?>
+										<?php endif; ?>
+									</div>
+									<!-- End .product-single-carousel -->
+									<span class="prod-full-screen">
+										<i class="icon-plus"></i>
+									</span>
+								</div>
+
+								<div class="prod-thumbnail owl-dots transparent-dots flex-column" id="carousel-custom-dots">
+									<div class="owl-dot active">
+										<img src="<?php echo base_url($productImagePath); ?>" width="98" height="98"
+											alt="<?= htmlspecialchars($product->description ?? 'product'); ?>" />
+									</div>
+									
+									<?php if ($is_module_product && !empty($additionalImages)): ?>
+										<?php foreach ($additionalImages as $imgPath): ?>
+											<?php if (file_exists(FCPATH . $imgPath)): ?>
+										<div class="owl-dot">
+											<img src="<?php echo base_url($imgPath); ?>" width="98" height="98"
+													alt="<?= htmlspecialchars($product->description ?? 'product'); ?>" />
+										</div>
+											<?php endif; ?>
+										<?php endforeach; ?>
+									<?php endif; ?>
+									
+									<?php if (!$is_module_product): ?>
+										<?php foreach ($imageFiles as $key => $path): ?>
+											<?php if (file_exists(FCPATH . $path)): ?>
+										<div class="owl-dot">
+											<img src="<?php echo base_url($path); ?>" width="98" height="98"
+													alt="<?= htmlspecialchars($product->description ?? 'product'); ?>" />
+										</div>
+											<?php endif; ?>
+										<?php endforeach; ?>
+									<?php endif; ?>
+								</div>
+							</div>
+						</div><!-- End .col-lg-6 -->
+
+						<div class="col-lg-5 pb-1">
+							<div class="single-product-custom-block">
+								<div class="porto-block">
+									<h5 class="porto-heading d-inline-block">Premium dostava</h5>
+
+									<h5 class="porto-heading d-inline-block">100% povrat novca
+										Garancija</h5>
+
+									<h5 class="porto-heading d-inline-block">Podrška 24/7</h5>
+								</div>
+							</div>
+
+							<div class="product-single-details mb-1">
+								<div class="product-title">
+									<h1><?php echo $product->description; ?></h1>
+								</div><!-- End .product-title -->
+
+								<hr class="short-divider">
+
+								<?php if (!$is_module_product && $minPrice !== "Price not available" && $maxPrice !== "Price not available"): ?>
+								<div class="price-box">
+									<?php if($minPrice == $maxPrice): ?>
+									<span class="new-price" > <?php echo ceil($maxPrice); ?>.00€/m1 bez PDV-a</span>
+									<?php else: ?>
+									<span class="new-price" ><?php echo ceil($minPrice); ?>.00€ - <?php echo ceil($maxPrice); ?>.00€/m1 bez PDV-a</span>
+									<?php endif; ?>
+								</div><!-- End .price-box -->
+								<?php endif; ?>
+
+								<div class="product-desc">
+									<p>
+									<?php echo $product->long_description ?? 'Naša ograda idealan je izbor za sve koji traže dugotrajno, moderno i estetski privlačno rješenje za svoj dom ili poslovni prostor. Izrađena od visokokvalitetnog materijala, ova ograda pruža vrhunsku otpornost na koroziju, što je čini savršenom za vanjsku upotrebu u svim vremenskim uvjetima.'; ?>
+									</p>
+								</div><!-- End .product-desc -->
+
+								<div class="product-filters-container">
+									<div class="product-options-wrapper">
+										<?php
+										// Get material variants
+										$materials = [];
+										$hasMaterialVariants = false;
+										if (!empty($variations)) {
+											foreach ($variations as $variation) {
+												if ($variation->variation_name === 'Vrsta materijala') {
+													$materials[] = $variation->variation_value;
+													$hasMaterialVariants = true;
+												}
+											}
+										}
+										
+										// Get glass variants
+										$glassTypes = [];
+										$hasGlassVariants = false;
+										if (!empty($variations)) {
+											foreach ($variations as $variation) {
+												if ($variation->variation_name === 'Vrsta stakla') {
+													$glassTypes[] = $variation->variation_value;
+													$hasGlassVariants = true;
+												}
+											}
+										}
+										
+										// Get height variants
+										$heights = [];
+										$hasHeightVariants = false;
+										if (!empty($variations)) {
+											foreach ($variations as $variation) {
+												if ($variation->variation_name === 'Visina') {
+													// Extract numeric value for sorting
+													$numericValue = (int)preg_replace('/[^0-9]/', '', $variation->variation_value);
+													$heights[$numericValue] = $variation->variation_value;
+													$hasHeightVariants = true;
+												}
+											}
+										}
+										
+										// Sort heights numerically if present
+										if (!empty($heights)) {
+											ksort($heights);
+										}
+										?>
+										
+										<?php if ($hasMaterialVariants): ?>
+										<div class="option-section material-section">
+											<label class="variant__label">
+										<?php
+												// Get the variant name from the database
+												$materialVariantName = "VRSTA MATERIJALA";
+												if (!empty($variations)) {
+													foreach ($variations as $variation) {
+														if ($variation->variation_name === 'Vrsta materijala') {
+															$materialVariantName = strtoupper($variation->variation_name);
+															break;
+														}
+													}
+												}
+												?>
+												<b><?php echo $materialVariantName; ?></b>
+											</label>
+											<div class="material-options">
+											<?php
+												// Define image paths for materials
+												$materialImages = [
+													'Pocinčani čelik' => 'assets/front/assets/images/material/steel.jfif',
+													'Aluminij' => 'assets/front/assets/images/material/aluminum.jfif',
+													'Nehrđajući čelik-inox' => 'assets/front/assets/images/materials/stainless.jpg'
+												];
+												
+												foreach ($materials as $index => $material): 
+												$isFirst = ($index === 0) ? 'selected-material' : '';
+													$imagePath = isset($materialImages[$material]) ? 
+														$materialImages[$material] : 'assets/front/assets/images/materials/default.jpg';
+												?>
+												<div class="material-option <?php echo $isFirst; ?>" data-attrib="<?php echo $material; ?>">
+													<img src="<?php echo base_url($imagePath); ?>" alt="<?php echo $material; ?>">
+													<span><?php echo $material; ?></span>
+											</div>
+												<?php endforeach; ?>
+											</div>
+											</div>
+											<?php endif; ?>
+
+										<?php if ($hasGlassVariants): ?>
+										<div class="option-section glass-section">
+											<label class="variant__label">
+										<?php
+												// Get the variant name from the database
+												$glassVariantName = "VRSTA STAKLA";
+												if (!empty($variations)) {
+													foreach ($variations as $variation) {
+														if ($variation->variation_name === 'Vrsta stakla') {
+															$glassVariantName = strtoupper($variation->variation_name);
+															break;
+														}
+													}
+												}
+												?>
+												<b><?php echo $glassVariantName; ?></b>
+											</label>
+											<div class="material-options">
+											<?php
+												// Define image paths for glass types
+												$glassImages = [
+													'Prozirno staklo' => 'assets/front/assets/images/materials/clear-glass.jpg',
+													'Matirano staklo' => 'assets/front/assets/images/materials/frosted-glass.jpg',
+													'Lamelirano staklo' => 'assets/front/assets/images/materials/laminated-glass.jpg',
+													'8+8 Sivo' => 'assets/front/assets/images/material/grey_glass.jfif',
+													'8+8 Transparentno' => 'assets/front/assets/images/material/transparent.jfif'
+												];
+												
+												foreach ($glassTypes as $index => $glass): 
+												$isFirst = ($index === 0) ? 'selected-glass' : '';
+													$imagePath = isset($glassImages[$glass]) ? 
+														$glassImages[$glass] : 'assets/front/assets/images/materials/default.jpg';
+												?>
+												<div class="material-option glass-option <?php echo $isFirst; ?>" data-attrib="<?php echo $glass; ?>">
+													<img src="<?php echo base_url($imagePath); ?>" alt="<?php echo $glass; ?>">
+													<span><?php echo $glass; ?></span>
+											</div>
+												<?php endforeach; ?>
+											</div>
+											</div>
+											<?php endif; ?>
+
+										<?php if ($hasHeightVariants): ?>
+										<div class="option-section height-section">
+											<label class="variant__label">
+											<?php
+												// Get the variant name from the database
+												$heightVariantName = "VISINA:";
+												if (!empty($variations)) {
+													foreach ($variations as $variation) {
+														if ($variation->variation_name === 'Visina') {
+															$heightVariantName = strtoupper($variation->variation_name) . ":";
+															break;
+														}
+													}
+												}
+												?>
+												<span><?php echo $heightVariantName; ?></span>
+												<b class="selected-height-display">180cm</b>
+													</label>
+											<div class="height-options">
+												<?php
+												// Find the default selected height
+												$defaultHeight = '180cm';
+												$defaultFound = false;
+												
+												foreach ($heights as $numericHeight => $displayHeight):
+													// Check if this is the default height (180cm) or closest match
+													$isSelected = '';
+													if (strpos($displayHeight, '180') !== false || 
+														(!$defaultFound && strpos($displayHeight, '120') !== false)) {
+														$isSelected = 'selected-height';
+														$defaultHeight = $displayHeight;
+														$defaultFound = true;
+													}
+												?>
+												<div class="height-option <?php echo $isSelected; ?>" data-attrib="<?php echo $displayHeight; ?>">
+													<?php echo $displayHeight; ?>
+											</div>
+												<?php endforeach; ?>
+											</div>
+											<script>
+												// Update the selected height display on page load
+												document.addEventListener('DOMContentLoaded', function() {
+													const selectedHeight = document.querySelector('.height-option.selected-height');
+													if (selectedHeight) {
+														document.querySelector('.selected-height-display').textContent = selectedHeight.dataset.attrib;
+													}
+												});
+											</script>
+											</div>
+											<?php endif; ?>	
+											</div>
+
+									<div class="product-action">
+										<?php if ($hasMaterialVariants || $hasGlassVariants || $hasHeightVariants): ?>
+										<div class="price-box">
+											<div class="price-display-row">
+												<span class="total-price">Ukupno</span>
+												<div class="price-container">
+													<div class="product-material-height-price">99.00€</div>
+													<div class="vat-info">+ PDV</div>
+												</div>
+											</div>
+											<div class="quantity-wrapper">
+												<label class="quantity-label">Količina</label>
+												<div class="quantity-container">
+													<button type="button" class="quantity-btn decrease"></button>
+													<input type="number" class="quantity-input" value="1" min="1" max="100" step="1">
+													<button type="button" class="quantity-btn increase"></button>
+											</div>
+											</div>
+											</div>
+										<?php else: ?>
+										<div class="price-box">
+											<div class="price-display-row">
+												<?php if(isset($product->price) && !empty($product->price)): ?>
+												<span class="total-price">Ukupno</span>
+												<div class="price-container">
+													<div class="product-material-height-price"><?php echo format_money($product->price); ?></div>
+													<div class="vat-info">+ PDV</div>
+												</div>
+												<?php else: ?>
+												<span class="total-price">Cijena na upit</span>
+												<div class="product-material-height-price">Kontaktirajte nas</div>
+											<?php endif; ?>	
+											</div>
+											<div class="product-action-container">
+												<div class="quantity-wrapper">
+													<label class="quantity-label">Količina</label>
+													<div class="quantity-container">
+														<button type="button" class="quantity-btn decrease"></button>
+														<input type="number" class="quantity-input" value="1" min="1" max="100" step="1">
+														<button type="button" class="quantity-btn increase"></button>
+											</div>
+									</div>
+													</div>
+												</div>
+										
+										<div class="product-action-container">
+											<div class="quantity-wrapper">
+												<label class="quantity-label">Količina</label>
+												<div class="quantity-container">
+													<button type="button" class="quantity-btn decrease"></button>
+													<input type="number" class="quantity-input" value="1" min="1" max="100" step="1">
+													<button type="button" class="quantity-btn increase"></button>
+											</div>
+												</div>
+													</div>
+												<?php endif; ?>
+										
+										<button class="btn btn-block btn-brown" id="submitOrder">Dodaj u košaricu</button>
+									</div>
+								</div>
+								
+								<hr class="divider mb-0 mt-0">
+
+								<div class="product-single-share custom-product-single-share">
+									<label class="sr-only">Share:</label>
+
+									<div class="social-icons mt-3">
+										<a href="https://www.facebook.com/p/Ogradahr-61567005054532/" class="social-icon social-facebook icon-facebook" target="_blank"
+											title="Facebook"></a>
+										<a href="#" class="social-icon social-twitter icon-twitter" target="_blank"
+											title="Twitter"></a>
+										<a href="#" class="social-icon social-linkedin fab fa-linkedin-in"
+											target="_blank" title="Linkedin"></a>
+										<a href="#" class="social-icon social-gplus fab fa-google-plus-g"
+											target="_blank" title="Google +"></a>
+										<a href="#" class="social-icon social-mail icon-mail-alt" target="_blank"
+											title="Mail"></a>
+									</div><!-- End .social-icons -->
+								</div><!-- End .product single-share -->
+
+								<a href="wishlist.html"
+									class="btn-icon-wish add-wishlist justify-content-start mb-lg-0 mb-1"
+									title="Add to Wishlist"><i class="icon-wishlist-2"></i><span>Dodaj na listu želja</span>
+									
+								</a>
+								<div class="logo_freesample">
+									<p class="fixed_position_for_scroll"></p>
+									<div class="deliverylogo">
+										<span>
+										<img src="https://cdn.shopify.com/s/files/1/0520/1670/9803/files/van_760cb8c3-6260-49eb-acdc-be3fb191cfeb.svg?v=1704544042">
+										</span>
+
+										
+										<span class="text-span"><b> Premium dostava</b> vlastitim vozilima</span>
+										
+									</div>
+									<div class="deliverylogo">
+										<span>
+										<img src="https://cdn.shopify.com/s/files/1/0520/1670/9803/files/click_and_collect.svg?v=1704544043">
+										</span>
+										
+										<span class="text-span"><b>Klik i preuzimanje</b> za robu na stanju sljedeći radni dan.</span>
+										
+									</div>
+								</div>
+								<div class="trustpilot_contact">
+								<div class="trust_badge bggrey_border">
+									<p>Izvrsne recenzije</p>
+									<div class="ratings-container second-ratings">
+										<div class="product-ratings">
+											<span class="ratings" style="width:90%"></span><!-- End .ratings -->
+											<span class="tooltiptext tooltip-top"></span>
+										</div><!-- End .product-ratings -->
+										<a href="#" class="rating-link">( 5 Recenzije )</a>
+									</div><!-- End .ratings-container -->
+								</div>
+									<div class="contact_in bggrey_border">
+										<p>Trebate pomoć?<br>
+										Nazovite <a href="tel:+385912001500">+385 912001500</a><br>
+										<span>08:00 - 16:00 - 5 dana u tjednu</span>
+										</p>
+									</div>
+								</div>
+							</div><!-- End .product-single-details -->
+
+
+						</div><!-- End .col-lg-6 -->
+					</div><!-- End .row -->
+				</div><!-- End .product-single-container -->
+				<?php @include('cart.php') ?>
+			</div>
+			
+			<div class="container-fluid">
+				<div class="product-single-tabs">
+					<ul class="nav nav-tabs" role="tablist">
+						<li class="nav-item">
+							<a class="nav-link active" id="product-tab-desc" data-toggle="tab"
+								href="#product-desc-content" role="tab" aria-controls="product-desc-content"
+								aria-selected="true">Opis</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link" id="product-tab-size" data-toggle="tab"
+								href="#product-size-content" role="tab" aria-controls="product-size-content"
+								aria-selected="true">Veličina ograde</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link" id="product-tab-reviews" data-toggle="tab"
+								href="#product-reviews-content" role="tab"
+								aria-controls="product-reviews-content" aria-selected="false">Recenzije
+								(5)</a>
+						</li>
+					</ul>
+
+					<div class="tab-content">
+						<div class="tab-pane fade show active" id="product-desc-content" role="tabpanel"
+							aria-labelledby="product-tab-desc">
+							<div class="product-desc-content">
+								<p class="mb-1">
+								<?php echo $product->long_description ?? 'Naša ograda idealan je izbor za sve koji traže dugotrajno, moderno i estetski privlačno rješenje za svoj dom ili poslovni prostor. Izrađena od visokokvalitetnog materijala, ova ograda pruža vrhunsku otpornost na koroziju, što je čini savršenom za vanjsku upotrebu u svim vremenskim uvjetima.'; ?>
+								</p>
+
+								<?php
+								// Get the product ID
+								$product_id = $module_product['id'] ?? null;
+								
+								// Try to get the first gallery image using product ID
+								$descImage = '';
+								if ($product_id) {
+									$galleryImage1 = "product_{$product_id}_1.jpg";
+									if (file_exists(FCPATH . 'modules/products/uploads/' . $galleryImage1)) {
+										$descImage = module_dir_url('products', 'uploads/') . $galleryImage1;
+									}
+								}
+								
+								// If no gallery image, fall back to main product image
+								if (empty($descImage) && !empty($module_product['product_image'])) {
+									$descImage = module_dir_url('products', 'uploads/') . $module_product['product_image'];
+								}
+								
+								// If still no image, use default
+								if (empty($descImage)) {
+									$descImage = base_url('assets/front/assets/images/proizvodi/default-product.jpg');
+								}
+								?>
+								<img src="<?php echo $descImage; ?>" alt="<?php echo htmlspecialchars($module_product['product_name'] ?? 'product image'); ?>" class="float-right">
+
+								<ul>
+									<li>Sve vrste proizvoda koje želite - jednostavno, konfigurabilno</li>
+									<li>Proizvodi koji se mogu preuzeti/digitalni proizvodi, virtualni proizvodi</li>
+									<li>Upravljanje zalihama s nenaručenim artiklima</li>
+								</ul>
+
+								<div class="row justify-content-center">
+									<div class="col-sm-6 col-xl-4">
+										<div class="feature-box feature-box-simple text-center">
+											<div class="feature-icon">
+												<i class="fa fa-star"></i>
+											</div>
+
+											<div class="feature-box-content">
+												<h3>Namjenska usluga</h3>
+												<p>Za pomoć oko narudžbe obratite se našim stručnjacima,
+												prilagođavanje ili savjet o dizajnu</p>
+											</div><!-- End .feature-box-content -->
+										</div><!-- End .feature-box -->
+									</div><!-- End .col-md-4 -->
+
+									<div class="col-sm-6 col-xl-4">
+										<div class="feature-box feature-box-simple text-center">
+											<div class="feature-icon">
+												<i class="fa fa-reply"></i>
+											</div>
+
+											<div class="feature-box-content">
+												<h3>Besplatan povrat</h3>
+												<p>Za pomoć oko narudžbe obratite se našim stručnjacima,
+												prilagođavanje ili savjet o dizajnu</p>
+											</div><!-- End .feature-box-content -->
+										</div><!-- End .feature-box -->
+									</div><!-- End .col-md-4 -->
+
+									<div class="col-sm-6 col-xl-4">
+										<div class="feature-box feature-box-simple text-center">
+											<div class="feature-icon">
+												<i class="fa fa-paper-plane"></i>
+											</div>
+
+											<div class="feature-box-content">
+												<h3>Međunarodna dostava</h3>
+												<p>Za pomoć oko narudžbe obratite se našim stručnjacima,
+												prilagođavanje ili savjet o dizajnu</p>
+											</div><!-- End .feature-box-content -->
+										</div><!-- End .feature-box -->
+									</div><!-- End .col-md-4 -->
+								</div><!-- End .row -->
+
+								<p>
+								<?php echo $product->short_description ?? 'Aluminijska ograda ne samo da osigurava sigurnost i privatnost, već daje i moderan izgled vašem objektu. Prilagodite svoj prostor našim raznovrsnim modelima koji odgovaraju vašem stilu i potrebama.'; ?>
+								</p>
+							</div><!-- End .product-desc-content -->
+						</div><!-- End .tab-pane -->
+
+						<div class="tab-pane fade" id="product-size-content" role="tabpanel"
+							aria-labelledby="product-tab-size">
+							<div class="product-size-content">
+								<div class="row">
+									<div class="col-md-6 product-details specifications">
+										<h3>Specifikacije</h3>
+										<ul>
+											<?php if(isset($product->specifications) && is_array($product->specifications) && !empty($product->specifications)): ?>
+												<?php foreach($product->specifications as $spec_name => $spec_value): ?>
+												<li>
+													<span><?php echo $spec_name; ?></span>
+													<span><?php echo $spec_value; ?></span>
+												</li>
+												<?php endforeach; ?>
+											<?php else: ?>
+											<li>
+												<span>Width</span>
+												<span>180cm</span>
+											</li>
+
+											<li>
+												<span>Height</span>
+												<span class="specificationheight">
+													<span class="specificationheightin">220 </span>cm
+												</span>
+											</li>
+
+											<li>
+												<span>Slat Thickness</span>
+												<span>18mm</span>
+											</li>
+											<li>
+												<span>Slat Height</span>
+
+												<span>30cm</span>
+
+											</li>
+											<li>
+												<span>Slat Width</span>
+												<span>180cm</span>
+											</li>
+
+											<li>
+												<span>Total fence width</span>
+												<span>192cm</span>
+											</li>
+											<li>
+												<span>Post Centre To Centre</span>
+												<span>184cm</span>
+											</li>
+											<li>
+												<span>Post Depth</span>
+												<span>8cm</span>
+											</li>
+											<li>
+												<span>Post Height</span>
+
+
+												<span class="specifications_post_height">220 cm</span>
+											</li>
+											<li>
+												<span>Post Width</span>
+												<span>8cm</span>
+											</li>
+											<?php endif; ?>
+										</ul>
+									</div>
+									<div class="col-md-6">
+										<img src="<?= base_url('assets/front/assets/images/products/product_details.svg'); ?>"
+											alt="product specifications">
+									</div><!-- End .col-md-4 -->
+
+
+								</div><!-- End .row -->
+							</div><!-- End .product-size-content -->
+						</div><!-- End .tab-pane -->
+
+						<div class="tab-pane fade" id="product-reviews-content" role="tabpanel"
+							aria-labelledby="product-tab-reviews">
+							<div class="product-reviews-content">
+								<!-- <h3 class="reviews-title">1 recenzija za "Mila Maslina"</h3> -->
+
+								<div class="comment-list">
+									<div class="comments">
+										<!-- <figure class="img-thumbnail">
+											<img src="<?= base_url('assets/front/assets/images/blog/author.jpg'); ?>" alt="author" width="80"
+												height="80">
+										</figure> -->
+
+										<div class="comment-block">
+											<div class="comment-header">
+												<div class="comment-arrow"></div>
+
+												<div class="ratings-container float-sm-right">
+													<div class="product-ratings">
+														<span class="ratings" style="width:100%"></span>
+														<!-- End .ratings -->
+														<span class="tooltiptext tooltip-top"></span>
+													</div><!-- End .product-ratings -->
+												</div>
+
+												<span class="comment-by">
+													<strong>Ana M.</strong>
+												</span>
+											</div>
+
+											<div class="comment-content">
+												<p>
+												Iskustvo s ovom bravarskom tvrtkom je bilo izvanredno. Naša nova ograda je apsolutno savršena - precizno izrađena, čvrsta i estetski privlačna. Cijenimo njihovu posvećenost detaljima i stručnost, te ih toplo preporučujemo svima koji traže vrhunsku bravarsku uslugu.</p>
+											</div>
+										</div>
+										<div class="comment-block">
+											<div class="comment-header">
+												<div class="comment-arrow"></div>
+
+												<div class="ratings-container float-sm-right">
+													<div class="product-ratings">
+														<span class="ratings" style="width:100%"></span>
+														<!-- End .ratings -->
+														<span class="tooltiptext tooltip-top"></span>
+													</div><!-- End .product-ratings -->
+												</div>
+
+												<span class="comment-by">
+													<strong>Darko M.</strong>
+												</span>
+											</div>
+
+											<div class="comment-content">
+												<p>Ova tvrtka je pravi izbor za one koji traže pouzdane i kreativne bravarske usluge. Njihove stepenice u našoj kući su nevjerojatno lijepa i funkcionalna. Tim je bio susretljiv, kompetentan i prilagodljiv našim potrebama. Hvala vam na izvrsnom radu!</p>
+											</div>
+										</div>
+										<div class="comment-block">
+											<div class="comment-header">
+												<div class="comment-arrow"></div>
+
+												<div class="ratings-container float-sm-right">
+													<div class="product-ratings">
+														<span class="ratings" style="width:90%"></span>
+														<!-- End .ratings -->
+														<span class="tooltiptext tooltip-top"></span>
+													</div><!-- End .product-ratings -->
+												</div>
+
+												<span class="comment-by">
+													<strong>Martina K.</strong>
+												</span>
+											</div>
+
+											<div class="comment-content">
+												<p>
+												Nemam dovoljno riječi hvale za ovu bravarsku tvrtku. Naša nova ograda je čisto remek-djelo - elegantna, čvrsta i prilagođena našem dvorištu. Profesionalnost i ljubaznost zaposlenika su nas oduševile. Ako tražite vrhunsku obrtničku kvalitetu, ovo je pravo mjesto za vas.					</p>
+											</div>
+										</div>
+										<div class="comment-block">
+											<div class="comment-header">
+												<div class="comment-arrow"></div>
+
+												<div class="ratings-container float-sm-right">
+													<div class="product-ratings">
+														<span class="ratings" style="width:90%"></span>
+														<!-- End .ratings -->
+														<span class="tooltiptext tooltip-top"></span>
+													</div><!-- End .product-ratings -->
+												</div>
+
+												<span class="comment-by">
+													<strong>Marko P.</strong>
+												</span>
+											</div>
+
+											<div class="comment-content">
+												<p>
+												Radujem se što mogu podijeliti svoje pozitivno iskustvo s ovom tvrtkom. Naša metalna konstrukcija izgleda izvanredno i pokazuje visokokvalitetnu izradu. Tim je bio profesionalan, brz i pažljiv. Svaka preporuka za njihove usluge!</p>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="divider"></div>
+
+								<div class="add-product-review">
+									<h3 class="review-title">Dodajte komentar</h3>
+
+									<form action="#" class="comment-form m-0">
+										<div class="rating-form">
+											<label for="rating">Vaša ocjena<span
+													class="required">*</span></label>
+											<span class="rating-stars">
+												<a class="star-1" href="#">1</a>
+												<a class="star-2" href="#">2</a>
+												<a class="star-3" href="#">3</a>
+												<a class="star-4" href="#">4</a>
+												<a class="star-5" href="#">5</a>
+											</span>
+
+											<select name="rating" id="rating" required=""
+												style="display: none;">
+												<option value="">Rate…</option>
+												<option value="5">Perfect</option>
+												<option value="4">Good</option>
+												<option value="3">Average</option>
+												<option value="2">Not that bad</option>
+												<option value="1">Very poor</option>
+											</select>
+										</div>
+
+										<div class="form-group">
+											<label>Vaša recenzija<span class="required">*</span></label>
+											<textarea cols="5" rows="6"
+												class="form-control form-control-sm"></textarea>
+										</div><!-- End .form-group -->
+
+
+										<div class="row">
+											<div class="col-md-6 col-xl-12">
+												<div class="form-group">
+													<label>Ime <span class="required">*</span></label>
+													<input type="text" class="form-control form-control-sm"
+														required>
+												</div><!-- End .form-group -->
+											</div>
+
+											<div class="col-md-6 col-xl-12">
+												<div class="form-group">
+													<label>Email <span class="required">*</span></label>
+													<input type="text" class="form-control form-control-sm"
+														required>
+												</div><!-- End .form-group -->
+											</div>
+
+											<div class="col-md-6 col-xl-12">
+												<div class="custom-control custom-checkbox">
+													<input type="checkbox" class="custom-control-input"
+														id="save-name" />
+													<label class="custom-control-label mb-0"
+														for="save-name">Sačuvaj moje
+														ime, e-pošta i web stranicu u ovom pregledniku za
+														sljedeći put </label>
+												</div>
+											</div>
+										</div>
+
+										<input type="submit" class="btn btn-primary" value="Pošalji">
+									</form>
+								</div><!-- End .add-product-review -->
+							</div><!-- End .product-reviews-content -->
+						</div><!-- End .tab-pane -->
+					</div><!-- End .tab-content -->
+				</div><!-- End .product-single-tabs -->
+				<!-- New section -->
+				<div id="shopify-section-product-multi-images-features" class="shopify-section index-section-pro">
+					<section id="section-product-multi-images-features" class="wrapper-image-text">
+						<div class="page-width">
+							<div class="section-header">
+								<h3 class="header section-h">Zašto izabrati <?php echo isset($product->category) ? strtolower($product->category) : 'naše ograde'; ?></h3>
+							</div>
+						</div>
+						<div class="page-width">
+							<div class="image_with_text_pro hidden-phone">
+								<div class="image_with_text_pro-in">
+									<?php if(isset($product->benefits) && is_array($product->benefits) && !empty($product->benefits)): ?>
+										<?php foreach(array_slice($product->benefits, 0, 3) as $index => $benefit): ?>
+										<div class="feature-row-pro aos-init aos-animate">
+											<div class="feature-row__item_pro">
+												<div class="image-wrap-pro">
+													<img class="feature-row__image-pro lazyloaded" src="<?php echo isset($benefit['image']) ? base_url($benefit['image']) : base_url('assets/front/assets/images/product-details/feature-'.($index+1).'.jpg'); ?>" alt="<?php echo $benefit['title'] ?? ''; ?>">
+												</div>
+											</div>
+											<div class="feature-row__item-pro feature-row__text-pro feature-row__text--left">
+												<p class="h3"><?php echo $benefit['title'] ?? ''; ?></p>
+												<div class="rte featured-row__subtext">
+													<p><?php echo $benefit['description'] ?? ''; ?></p>
+												</div>
+											</div>
+										</div>
+										<?php endforeach; ?>
+									<?php else: ?>
+									<div class="feature-row-pro aos-init aos-animate">
+										<div class="feature-row__item_pro">
+											<div class="image-wrap-pro">
+												<img class="feature-row__image-pro lazyloaded" src="<?php echo base_url('assets/front/assets/images/product-details/waterproof.jpg'); ?>" alt="">
+											</div>
+										</div>
+										<div class="feature-row__item-pro feature-row__text-pro feature-row__text--left">
+											<p class="h3">Otporan na vremenske uvjete</p>
+											<div class="rte featured-row__subtext">
+												<p>Budite uvjereni da će vaši proizvodi izgledati dobro bez obzira na kišu ili sunce. Naš čvrsti kompozit otporan je na truljenje i plijesan, a njegova ugrađena UV zaštita osigurava da njegova lijepa boja neće izblijediti na suncu.</p>
+											</div>
+										</div>
+									</div>
+									<div class="feature-row-pro aos-init aos-animate">
+										<div class="feature-row__item_pro">
+											<div class="image-wrap-pro">
+												<img class="feature-row__image-pro lazyloaded" src="<?php echo base_url('assets/front/assets/images/product-details/low_maintenance.jpg'); ?>" alt="">
+											</div>
+										</div>
+										<div class="feature-row__item-pro feature-row__text-pro feature-row__text--left">
+											<p class="h3">Nisko održavanje</p>
+											<div class="rte featured-row__subtext">
+												<p>Naš kompozit se lako čisti i nikada ga nećete morati bojati, tretirati ili mrljati, tako da ćete provesti više vremena uživajući u svom prostoru.</p>
+											</div>
+										</div>
+									</div>
+									<div class="feature-row-pro aos-init aos-animate">
+										<div class="feature-row__item_pro">
+											<div class="image-wrap-pro">
+												<img class="feature-row__image-pro lazyloaded" src="<?php echo base_url('assets/front/assets/images/product-details/fence-hardwearing.jpg'); ?>" alt="">
+											</div>
+										</div>
+										<div class="feature-row__item-pro feature-row__text-pro feature-row__text--left">
+											<p class="h3">Otporan</p>
+											<div class="rte featured-row__subtext">
+												<p>Naš kompozit je iznimno izdržljiv i neće se iskriviti, što naše proizvode čini jakim i čvrstim, ali i elegantnim.</p>
+											</div>
+										</div>
+									</div>
+									<?php endif; ?>
+								</div>
+
+								<div class="featured-img --gid://shopify/MediaImage/31213304185048">
+									<?php
+									// Get the product ID
+									$product_id = $module_product['id'] ?? null;
+									
+									// Try to get the third gallery image using product ID
+									$featuredImage = '';
+									if ($product_id) {
+										$galleryImage3 = "product_{$product_id}_3.jpg";
+										if (file_exists(FCPATH . 'modules/products/uploads/' . $galleryImage3)) {
+											$featuredImage = module_dir_url('products', 'uploads/') . $galleryImage3;
+										}
+									}
+									
+									// If no gallery image, fall back to main product image
+									if (empty($featuredImage) && !empty($module_product['product_image'])) {
+										$featuredImage = module_dir_url('products', 'uploads/') . $module_product['product_image'];
+									}
+									
+									// If still no image, use default
+									if (empty($featuredImage)) {
+										$featuredImage = base_url('assets/front/assets/images/proizvodi/default-product.jpg');
+									}
+									?>
+									<img src="<?php echo $featuredImage; ?>" alt="<?php echo htmlspecialchars($module_product['product_name'] ?? 'product image'); ?>">
+								</div>
+
+								<div class="image_with_text_pro-in">
+									<?php if(isset($product->benefits) && is_array($product->benefits) && count($product->benefits) > 3): ?>
+										<?php foreach(array_slice($product->benefits, 3, 3) as $index => $benefit): ?>
+									<div class="feature-row-pro aos-init">
+										<div class="feature-row__item-pro feature-row__text-pro feature-row__text--right">
+												<p class="h3"><?php echo $benefit['title'] ?? ''; ?></p>
+											<div class="rte featured-row__subtext">
+													<p><?php echo $benefit['description'] ?? ''; ?></p>
+											</div>
+										</div>
+										<div class="feature-row__item_pro">
+											<div class="image-wrap-pro">
+													<img class="feature-row__image-pro lazyloaded" src="<?php echo isset($benefit['image']) ? base_url($benefit['image']) : base_url('assets/front/assets/images/product-details/feature-'.($index+4).'.jpg'); ?>" alt="<?php echo $benefit['title'] ?? ''; ?>">
+											</div>
+										</div>
+									</div>
+										<?php endforeach; ?>
+									<?php else: ?>
+									<div class="feature-row-pro aos-init">
+										<div class="feature-row__item-pro feature-row__text-pro feature-row__text--right">
+											<p class="h3">Završna obrada letvica</p>
+											<div class="rte featured-row__subtext">
+												<p>Naše potpuno vodootporne letvice debljine 18 mm imaju duboku završnu obradu od drveta s obje strane.</p>
+											</div>
+										</div>
+										<div class="feature-row__item_pro">
+											<div class="image-wrap-pro">
+												<img class="feature-row__image-pro lazyloaded" src="<?php echo base_url('assets/front/assets/images/product-details/slat_finish.jpg'); ?>" alt="">
+											</div>
+										</div>
+									</div>
+									<div class="feature-row-pro aos-init">
+										<div class="feature-row__item-pro feature-row__text-pro feature-row__text--right">
+											<p class="h3">Prilagodljiv</p>
+											<div class="rte featured-row__subtext">
+												<p>Naše kompozitne proizvode možete izrezati na veličinu koju trebate bez ugrožavanja njihovog strukturalnog integriteta.</p>
+											</div>
+										</div>
+										<div class="feature-row__item_pro">
+											<div class="image-wrap-pro">
+												<img class="feature-row__image-pro lazyloaded" src="<?php echo base_url('assets/front/assets/images/product-details/product-5-big.jpg'); ?>" alt="">
+											</div>
+										</div>
+									</div>
+									<div class="feature-row-pro aos-init">
+										<div class="feature-row__item-pro feature-row__text-pro feature-row__text--right">
+											<p class="h3">Ekološki prihvatljiv</p>
+											<div class="rte featured-row__subtext">
+												<p>Sve naše letvice proizvedene su od reciklirane plastike. Koristimo ekvivalentnu težinu od 80 velikih plastičnih boca recikliranih u svaku letvicu.</p>
+											</div>
+										</div>
+										<div class="feature-row__item_pro">
+											<div class="image-wrap-pro">
+												<img class="feature-row__image-pro lazyloaded" src="<?php echo base_url('assets/front/assets/images/product-details/eco-friendly.jpg'); ?>" alt="">
+											</div>
+										</div>
+											</div>
+									<?php endif; ?>
+										</div>
+									</div>
+						</div>
+					</section>
+				</div>
+				<!-- the end new section -->
+				<div class="row faq-section">
+					<div class="col-lg-6">
+						<h2 class="mb-1">Često postavljana pitanja</h2>
+						<div id="accordion">
+							<?php if(isset($product->faqs) && is_array($product->faqs) && !empty($product->faqs)): ?>
+								<?php foreach($product->faqs as $index => $faq): ?>
+									<div class="card card-accordion">
+										<a class="card-header <?php echo ($index > 0) ? 'collapsed' : ''; ?>" href="#" data-toggle="collapse" data-target="#collapse<?php echo $index+1; ?>"
+											aria-expanded="<?php echo ($index === 0) ? 'true' : 'false'; ?>" aria-controls="collapse<?php echo $index+1; ?>">
+											<?php echo $faq['question']; ?>
+										</a>
+
+										<div id="collapse<?php echo $index+1; ?>" class="collapse <?php echo ($index === 0) ? 'show' : ''; ?>" data-parent="#accordion">
+											<p><?php echo $faq['answer']; ?></p>
+										</div>
+									</div>
+								<?php endforeach; ?>
+							<?php else: ?>
+							<div class="card card-accordion">
+								<a class="card-header" href="#" data-toggle="collapse" data-target="#collapseOne"
+									aria-expanded="true" aria-controls="collapseOne">
+									Koje su prednosti metalnih, staklenih i čeličnih ograda?
+								</a>
+
+								<div id="collapseOne" class="collapse show" data-parent="#accordion">
+									<p>Metalne ograde pružaju dugotrajnost, sigurnost i klasičan izgled.
+										Staklene ograde nude moderan, elegantan dizajn s neometanim pogledom.
+										Čelične ograde su jake, dugotrajne i zahtijevaju minimalno održavanje.</p>
+								</div>
+							</div>
+
+							<div class="card card-accordion">
+								<a class="card-header collapsed" href="#" data-toggle="collapse"
+									data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseOne">
+									Kako odabrati pravu ogradu za svoj posjed?
+								</a>
+
+								<div id="collapseTwo" class="collapse" data-parent="#accordion">
+									<p>Razmotrite svoje primarne potrebe: sigurnost, estetiku ili privatnost.
+										Metalne i čelične ograde idealne su za visoku sigurnost.
+										Staklene ograde savršene su za bazene, balkone ili modernu estetiku.</p>
+								</div>
+							</div>
+
+							<div class="card card-accordion">
+								<a class="card-header collapsed" href="#" data-toggle="collapse"
+									data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+									Jesu li ove ograde prilagodljive?
+								</a>
+
+								<div id="collapseThree" class="collapse" data-parent="#accordion">
+									<p>Da! Možete odabrati različite visine, boje i stilove prema svojim dizajnerskim željama.</p>
+								</div>
+							</div>
+
+							<div class="card card-accordion">
+								<a class="card-header collapsed" href="#" data-toggle="collapse"
+									data-target="#collapseFour" aria-expanded="true" aria-controls="collapseThree">
+									Jesu li ove ograde otporne na vremenske uvjete?
+								</a>
+
+								<div id="collapseFour" class="collapse" data-parent="#accordion">
+									<p>Da! Dizajnirane su da izdrže kišu, vjetar i izloženost suncu. Staklene ograde imaju UV zaštitu koja sprječava blijeđenje..</p>
+								</div>
+							</div>
+
+							<div class="card card-accordion">
+								<a class="card-header collapsed" href="#" data-toggle="collapse"
+									data-target="#collapseFive" aria-expanded="true" aria-controls="collapseThree">
+									Hrđaju li metalne i čelične ograde?
+								</a>
+
+								<div id="collapseFive" class="collapse" data-parent="#accordion">
+									<p>Naše su ograde obložene zaštitom od hrđe, no redovito održavanje im produljuje vijek trajanja.</p>
+								</div>
+							</div>
+							<?php endif; ?>
+						</div>
+					</div>
+					<div class="col-lg-6">
+						<?php
+						// Get the product ID
+						$product_id = $module_product['id'] ?? null;
+						
+						// Try to get the second gallery image using product ID
+						$faqImage = '';
+						if ($product_id) {
+							$galleryImage2 = "product_{$product_id}_2.jpg";
+							if (file_exists(FCPATH . 'modules/products/uploads/' . $galleryImage2)) {
+								$faqImage = module_dir_url('products', 'uploads/') . $galleryImage2;
+							}
+						}
+						
+						// If no second gallery image, fall back to main product image
+						if (empty($faqImage) && !empty($module_product['product_image'])) {
+							$faqImage = module_dir_url('products', 'uploads/') . $module_product['product_image'];
+						}
+						
+						// If still no image, use default
+						if (empty($faqImage)) {
+							$faqImage = base_url('assets/front/assets/images/proizvodi/test.jpg');
+						}
+						?>
+						<img class="faq-image" src="<?php echo $faqImage; ?>" alt="<?php echo htmlspecialchars($module_product['product_name'] ?? 'product image'); ?>">
+					</div>
+				</div>
+				<div class="get-free-sample-wrapper above-brand-highlights" style="background-image: url('<?= base_url('assets/front/assets/images/contact-details-bg.png') ?>');background-repeat: no-repeat;background-position: right;background-size: contain;">
+					<div class="page-width">
+						<div class="free-sample-product">
+						<p><b>Dopustite da vas vodimo</b> Naši stručnjaci rado će vam pomoći pronaći ono što vam je potrebno.</p>
+
+						<div class="inwrp">
+							
+							<p class="wrp">
+							<a class="btn-link" href="tel:+385912001500"><span>Nazovite sada</span> <span class="nmber">+385912001500</span></a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>
+				<div class="get-free-sample-wrapper above-brand-highlights mobile" style="background-image: url('<?= base_url('assets/front/assets/images/option_b-mobile.png') ?>');background-repeat: no-repeat;background-position: right;background-size: contain;">
+					<div class="page-width">
+						<div class="free-sample-product">
+						<p><b>Dopustite da vas vodimo</b> Naši stručnjaci rado će vam pomoći pronaći ono što vam je potrebno.</p>
+
+						<div class="inwrp">
+							
+							<p class="wrp">
+							<a class="btn-link" href="tel:+385912001500"><span>Nazovite sada</span> <span class="nmber">+385 912001500</span></a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="products-section pt-0">
+					<h2 class="section-title">Srodni proizvodi</h2>
+					
+					<div class="related-products-container">
+						<?php
+						// Load the products model efficiently - singleton pattern
+						$CI =& get_instance();
+						$CI->load->model('products/products_model');
+						
+						// Get current product ID and category
+						$currentProductId = isset($module_product['id']) ? $module_product['id'] : 0;
+						$currentCategoryId = isset($module_product['product_category_id']) ? $module_product['product_category_id'] : 0;
+						
+						// Limit and optimize query - only get up to 10 products
+						if ($currentCategoryId) {
+							// Add LIMIT directly to SQL for better performance
+							$CI->db->join('product_categories', db_prefix() . 'product_categories.p_category_id='.db_prefix() . 'product_master.product_category_id', 'LEFT');
+							$CI->db->where('product_category_id', $currentCategoryId);
+							$CI->db->where('id !=', $currentProductId); // Exclude current product
+							$CI->db->order_by('RAND()'); // Random order
+							$CI->db->limit(10); // Limit to 10 records
+							$relatedProducts = $CI->db->get(db_prefix() . 'product_master')->result_array();
+						} else {
+							// Get random products from any category
+							$CI->db->join('product_categories', db_prefix() . 'product_categories.p_category_id='.db_prefix() . 'product_master.product_category_id', 'LEFT');
+							$CI->db->where('id !=', $currentProductId); // Exclude current product
+							$CI->db->order_by('RAND()'); // Random order
+							$CI->db->limit(10); // Limit to 10 records
+							$relatedProducts = $CI->db->get(db_prefix() . 'product_master')->result_array();
+						}
+						
+						// Display up to 4 random products (already randomized in query)
+						$productsToShow = array_slice($relatedProducts, 0, 4);
+						?>
+
+						<!-- Simple products grid that works reliably -->
+						<div class="row products-grid">
+							<?php 
+							foreach ($productsToShow as $relProd): 
+								// Get product image efficiently
+								$imageUrl = base_url('modules/products/uploads/image-not-available.png'); // Default image
+								
+								if (!empty($relProd['product_image'])) {
+									$productImagePath = 'modules/products/uploads/' . $relProd['product_image'];
+									if (file_exists(FCPATH . $productImagePath)) {
+										$imageUrl = base_url($productImagePath);
+									}
+								}
+								
+								// Generate product URL
+								$productSlug = slugify($relProd['product_name']);
+								$productUrl = site_url('product/' . $productSlug);
+							?>
+							<div class="col-md-3 col-sm-6 col-12 mb-4">
+								<div class="product-default">
+									<figure>
+										<a href="<?= $productUrl ?>">
+											<img src="<?php echo $imageUrl; ?>" style="width:100%; height:300px; object-fit:contain;"
+												alt="<?php echo htmlspecialchars($relProd['product_name']); ?>">
+										</a>
+									</figure>
+									<div class="product-details">
+										<h3 class="product-title">
+											<a href="<?= $productUrl ?>"><?php echo htmlspecialchars($relProd['product_name']); ?></a>
+										</h3>
+									</div>
+								</div>
+							</div>
+							<?php endforeach; ?>
+						</div>
+					</div><!-- End .products-slider -->
+				</div>
+			</div><!-- End .products-section -->
+			<?php @include('flash-popup.php'); ?>
+			<!-- End .main -->
+
+<style>
+/* Styles for the related products grid */
+.products-grid {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -10px;
+}
+
+.products-grid .product-default {
+    height: 100%;
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    padding-bottom: 10px;
+}
+
+.products-grid .product-default:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-3px);
+}
+
+.products-grid .product-default figure {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px 6px 0 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.products-grid .product-default figure img {
+    transition: transform 0.3s ease;
+}
+
+.products-grid .product-default:hover figure img {
+    transform: scale(1.05);
+}
+
+.products-grid .product-details {
+    padding: 0 15px 15px;
+}
+
+.products-grid .product-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    height: 48px;
+    overflow: hidden;
+}
+
+.products-grid .product-title a {
+    color: #333;
+}
+
+.products-grid .product-title a:hover {
+    color: #0088cc;
+}
+
+.products-grid .price-box {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.products-grid .old-price {
+    font-size: 14px;
+    color: #999;
+    text-decoration: line-through;
+}
+
+.products-grid .product-price {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0088cc;
+}
+
+.products-grid .product-action {
+    margin-top: auto;
+}
+
+.products-grid .btn-add-cart {
+    background-color: #f4f4f4;
+    color: #333;
+    border-radius: 4px;
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.products-grid .btn-add-cart:hover {
+    background-color: #0088cc;
+    color: #fff;
+}
+
+.products-section {
+    padding: 30px 0;
+    border-top: 1px solid #eee;
+    margin-top: 30px;
+}
+
+.section-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    text-align: center;
+    color: #333;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.section-title:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 2px;
+    background-color: #0088cc;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+    .products-grid .col-md-3 {
+        margin-bottom: 20px;
+    }
+}
+</style>
+
+<script>
+    
+    const navItems = document.querySelectorAll("li.color-item");
+    navItems.forEach(item => {
+        item.addEventListener("click", function() {
+            navItems.forEach(li => li.classList.remove("active"));
+            this.classList.add("active");
+        });
+    });
+
+
+	const material = document.querySelectorAll("div.manageipv.variant-input.current_active");
+	material.forEach(item => {
+		item.addEventListener ("click", function() {
+			material.forEach(div => div.classList.remove('selected-material'));
+			this.classList.add('selected-material');
+		})
+	});
+
+	const height = document.querySelectorAll("div.manageipv.variant-input.current_active");
+	material.forEach(item => {
+		item.addEventListener ("click", function() {
+			material.forEach(div => div.classList.remove('active'));
+			this.classList.add('active');
+		})
+	});
+
+	const materialStandard = document.querySelectorAll("div.manageipv.variant-input.current_active");
+	material.forEach(item => {
+		item.addEventListener ("click", function() {
+			materialStandard.forEach(div => div.classList.remove('selected-material-standard'));
+			this.classList.add('selected-material-standard');
+		})
+	});
+
+</script>
+
+<script>
+$(document).ready(function() {
+    // Initialize base price from PHP
+    const basePrice = <?php echo isset($product->rate) ? $product->rate : '0'; ?>;
+    
+    // Initialize variant data from PHP
+    const variants = <?php 
+        $variantData = [];
+        if (!empty($variations)) {
+            foreach ($variations as $variation) {
+                if ($variation->variation_name === 'Visina') {
+                    // Remove 'cm' and convert to number for clean comparison
+                    $value = preg_replace('/[^0-9]/', '', $variation->variation_value);
+                    $variantData['heights'][$value] = [
+                        'price' => floatval($variation->rate),
+                        'name' => $variation->variation_value
+                    ];
+                }
+                if ($variation->variation_name === 'Vrsta materijala') {
+                    $variantData['materials'][$variation->variation_value] = [
+                        'price' => floatval($variation->rate),
+                        'name' => $variation->variation_value
+                    ];
+                }
+                if ($variation->variation_name === 'Vrsta stakla') {
+                    $variantData['glass'][$variation->variation_value] = [
+                        'price' => floatval($variation->rate),
+                        'name' => $variation->variation_value
+                    ];
+                }
+            }
+        }
+        echo json_encode($variantData);
+    ?>;
+    
+    // Expose updatePrice to global scope so it can be called from other scripts
+    window.updatePrice = function() {
+        const quantity = parseInt($('.quantity-input').val()) || 1;
+        let finalPrice = basePrice;
+        
+        // Check if we have variants to use
+        if (variants && (variants.heights || variants.materials || variants.glass)) {
+            // Get selected height
+            const selectedHeight = $('.height-option.selected-height').data('attrib');
+            const heightValue = selectedHeight ? selectedHeight.replace(/[^0-9]/g, '') : null;
+            
+            // Get selected material
+            const selectedMaterial = $('.material-option.selected-material').data('attrib');
+            
+            // Get selected glass type
+            const selectedGlass = $('.glass-option.selected-glass').data('attrib');
+            
+            // Calculate price based on variants
+            let variantPrice = 0;
+            
+            // Add height price if available
+            if (heightValue && variants.heights && variants.heights[heightValue]) {
+                variantPrice += variants.heights[heightValue].price;
+            }
+            
+            // Add material price if available
+            if (selectedMaterial && variants.materials && variants.materials[selectedMaterial]) {
+                variantPrice += variants.materials[selectedMaterial].price;
+            }
+            
+            // Add glass price if available
+            if (selectedGlass && variants.glass && variants.glass[selectedGlass]) {
+                variantPrice += variants.glass[selectedGlass].price;
+            }
+            
+            // If we have variant prices, use them instead of base price
+            if (variantPrice > 0) {
+                finalPrice = variantPrice;
+            }
+        }
+        
+        const total = finalPrice * quantity;
+        
+        if (!isNaN(total) && total > 0) {
+            $('.product-material-height-price').text(
+                quantity > 1 ? 
+                `${finalPrice.toFixed(2)}€/kom (${total.toFixed(2)}€ ukupno)` : 
+                `${finalPrice.toFixed(2)}€`
+            );
+            $('#selected_rate').val(total);
+            $('#selected_quantity').val(quantity);
+        } else {
+            $('.product-material-height-price').text("Cijena na upit");
+            $('#selected_rate').val('0');
+        }
+    };
+
+    // Quantity controls
+    $('.decrease').click(function() {
+        let value = parseInt($('.quantity-input').val()) || 1;
+        if (value > 1) {
+            $('.quantity-input').val(value - 1);
+            updatePrice();
+        }
+    });
+
+    $('.increase').click(function() {
+        let value = parseInt($('.quantity-input').val()) || 1;
+        if (value < 100) {
+            $('.quantity-input').val(value + 1);
+            updatePrice();
+        }
+    });
+
+    $('.quantity-input').on('input', function() {
+        let value = parseInt(this.value) || 1;
+        value = Math.max(1, Math.min(100, value));
+        $(this).val(value);
+        updatePrice();
+    });
+
+    // Material selection
+    $('.material-option').click(function() {
+        $('.material-option').removeClass('selected-material');
+        $(this).addClass('selected-material');
+        $('#selected_material').val($(this).data('attrib'));
+        updatePrice();
+    });
+
+    // Glass type selection
+    $('.glass-option').click(function() {
+        $('.glass-option').removeClass('selected-glass');
+        $(this).addClass('selected-glass');
+        $('#selected_glass').val($(this).data('attrib'));
+        updatePrice();
+    });
+
+    // Height selection
+    $('.height-option').click(function() {
+        $('.height-option').removeClass('selected-height');
+        $(this).addClass('selected-height');
+        $('.selected-height-display').text($(this).data('attrib'));
+        $('#selected_height').val($(this).data('attrib'));
+        updatePrice();
+    });
+
+    // Initial price update
+    updatePrice();
+});
+</script>
+
+<script>
+	$(document).ready(function () {
+        var reviews = $(".comment-block");
+        var randomIndex = Math.floor(Math.random() * reviews.length);
+        
+        reviews.hide();
+        
+        reviews.eq(randomIndex).show();
+    });
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Remove webfont.js dependency since it's not found
+    // Add FontAwesome from CDN instead for icons
+    if (!document.getElementById('font-awesome-css')) {
+        const fontAwesome = document.createElement('link');
+        fontAwesome.id = 'font-awesome-css';
+        fontAwesome.rel = 'stylesheet';
+        fontAwesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+        document.head.appendChild(fontAwesome);
+    }
+
+    // Quantity input handling
+    const quantityInput = document.querySelector('.quantity-input');
+    const decreaseBtn = document.querySelector('.decrease');
+    const increaseBtn = document.querySelector('.increase');
+    
+    // Initialize variant data from PHP
+    const variants = <?php 
+        $variantData = [];
+        if (!empty($variations)) {
+            foreach ($variations as $variation) {
+                if ($variation->variation_name === 'Visina') {
+                    // Remove 'cm' and convert to number for clean comparison
+                    $value = preg_replace('/[^0-9]/', '', $variation->variation_value);
+                    $variantData['heights'][$value] = [
+                        'price' => floatval($variation->rate),
+                        'name' => $variation->variation_value
+                    ];
+                }
+                if ($variation->variation_name === 'Vrsta materijala') {
+                    $variantData['materials'][$variation->variation_value] = [
+                        'price' => floatval($variation->rate),
+                        'name' => $variation->variation_value
+                    ];
+                }
+                if ($variation->variation_name === 'Vrsta stakla') {
+                    $variantData['glass'][$variation->variation_value] = [
+                        'price' => floatval($variation->rate),
+                        'name' => $variation->variation_value
+                    ];
+                }
+            }
+        }
+        echo json_encode($variantData);
+    ?>;
+
+    let selectedHeight = document.querySelector(".selected-height")?.dataset.attrib;
+    let selectedMaterial = document.querySelector(".selected-material")?.dataset.attrib;
+    let selectedGlass = document.querySelector(".selected-glass")?.dataset.attrib;
+
+    // Height selection
+    document.querySelectorAll(".height-option").forEach(option => {
+        option.addEventListener('click', function() {
+            selectedHeight = this.dataset.attrib;
+            document.querySelectorAll(".height-option").forEach(el => el.classList.remove("selected-height"));
+            this.classList.add("selected-height");
+            document.querySelector(".selectec_variant_value").textContent = selectedHeight;
+            updatePrice();
+        });
+    });
+
+    // Material selection
+    document.querySelectorAll(".material-option").forEach(option => {
+        option.addEventListener('click', function() {
+            selectedMaterial = this.dataset.attrib;
+            document.querySelectorAll(".material-option").forEach(el => el.classList.remove("selected-material"));
+            this.classList.add("selected-material");
+            updatePrice();
+        });
+    });
+
+    // Quantity buttons
+    decreaseBtn.addEventListener('click', function() {
+        let value = parseInt(quantityInput.value);
+        if (value > 1) {
+            quantityInput.value = value - 1;
+            updatePrice();
+        }
+    });
+
+    increaseBtn.addEventListener('click', function() {
+        let value = parseInt(quantityInput.value);
+        if (value < 100) {
+            quantityInput.value = value + 1;
+            updatePrice();
+        }
+    });
+
+    quantityInput.addEventListener('input', function() {
+        let value = parseInt(this.value);
+        if (isNaN(value) || value < 1) {
+            this.value = 1;
+        } else if (value > 100) {
+            this.value = 100;
+        }
+        updatePrice();
+    });
+
+    function updatePrice() {
+        if (variants && (variants.heights || variants.materials || variants.glass)) {
+            // Get the height value without 'cm' for comparison
+            const heightValue = selectedHeight ? selectedHeight.replace(/[^0-9]/g, '') : null;
+            
+            // Calculate price based on variants
+            let totalPrice = 0;
+            
+            // Check if a specific variation has a direct match
+            <?php if (!empty($variations)): ?>
+            let directVariationMatch = false;
+            
+            <?php foreach ($variations as $var): ?>
+            if ("<?php echo $var->variation_name ?>" === "Vrsta materijala" && 
+                selectedMaterial === "<?php echo htmlspecialchars($var->variation_value) ?>") {
+                totalPrice = <?php echo floatval($var->rate) ?>;
+                directVariationMatch = true;
+                console.log("Direct variation match for material: <?php echo htmlspecialchars($var->variation_value) ?>, price: <?php echo floatval($var->rate) ?>");
+            } else if ("<?php echo $var->variation_name ?>" === "Vrsta stakla" && 
+                selectedGlass === "<?php echo htmlspecialchars($var->variation_value) ?>") {
+                totalPrice = <?php echo floatval($var->rate) ?>;
+                directVariationMatch = true;
+                console.log("Direct variation match for glass: <?php echo htmlspecialchars($var->variation_value) ?>, price: <?php echo floatval($var->rate) ?>");
+            } else if ("<?php echo $var->variation_name ?>" === "Visina" && 
+                selectedHeight === "<?php echo htmlspecialchars($var->variation_value) ?>") {
+                if (!directVariationMatch) { // Use height price only if no material or glass match was found
+                    totalPrice = <?php echo floatval($var->rate) ?>;
+                    console.log("Direct variation match for height: <?php echo htmlspecialchars($var->variation_value) ?>, price: <?php echo floatval($var->rate) ?>");
+                }
+            }
+            <?php endforeach; ?>
+            <?php endif; ?>
+            
+            // If no direct match, try to add individual prices
+            if (totalPrice === 0) {
+                // Add height price if available
+                if (heightValue && variants.heights && variants.heights[heightValue]) {
+                    totalPrice += variants.heights[heightValue].price;
+                    console.log("Adding height price: " + variants.heights[heightValue].price);
+                }
+                
+                // Add material price if available
+                if (selectedMaterial && variants.materials && variants.materials[selectedMaterial]) {
+                    totalPrice += variants.materials[selectedMaterial].price;
+                    console.log("Adding material price: " + variants.materials[selectedMaterial].price);
+                }
+                
+                // Add glass type price if available
+                if (selectedGlass && variants.glass && variants.glass[selectedGlass]) {
+                    totalPrice += variants.glass[selectedGlass].price;
+                    console.log("Adding glass price: " + variants.glass[selectedGlass].price);
+                }
+            }
+            
+            // If we don't have any variant prices, use base price if available
+            if (totalPrice === 0) {
+                totalPrice = <?php echo isset($product->rate) ? $product->rate : '0'; ?>;
+                console.log("Using base price: " + totalPrice);
+            }
+            
+            // Store the unit price globally for the add to cart function
+            window.calculatedPrice = totalPrice;
+            
+            // Apply quantity
+            let quantity = parseInt(quantityInput.value) || 1;
+            let finalTotal = totalPrice * quantity;
+            
+            // Update price display with both per piece and total
+            const priceDisplay = document.querySelector(".product-material-height-price");
+            if (priceDisplay) {
+                if (quantity > 1) {
+                    priceDisplay.textContent = totalPrice.toFixed(2) + "€/kom (" + finalTotal.toFixed(2) + "€ ukupno)";
+                } else {
+                    priceDisplay.textContent = totalPrice.toFixed(2) + "€";
+                }
+            }
+            
+            // Update hidden fields for form submission if they exist
+            const selectedRateField = document.getElementById('selected_rate');
+            const selectedQuantityField = document.getElementById('selected_quantity');
+            
+            if (selectedRateField) selectedRateField.value = finalTotal;
+            if (selectedQuantityField) selectedQuantityField.value = quantity;
+            
+            console.log("Final calculated price: " + totalPrice + ", with quantity " + quantity + " = " + finalTotal);
+        }
+    }
+
+    // Initialize carousels if jQuery and OwlCarousel are available
+    if (typeof $ !== 'undefined' && $.fn.owlCarousel) {
+        // Product images carousel
+        $('.product-single-carousel').owlCarousel({
+            items: 1,
+            nav: true,
+            dots: false,
+            navText: ['<i class="icon-angle-left">', '<i class="icon-angle-right">'],
+            responsive: {
+                0: { items: 1 },
+                480: { items: 1 },
+                1200: { items: 1 }
+            }
+        });
+
+        // Related products carousel
+        $('.products-slider').owlCarousel({
+            loop: true,
+            margin: 20,
+            responsiveClass: true,
+            nav: true,
+            navText: ['<i class="icon-angle-left"></i>', '<i class="icon-angle-right"></i>'],
+            dots: true,
+            autoplay: false,
+            autoplayTimeout: 15000,
+            items: 4,
+            responsive: {
+                0: { items: 1 },
+                480: { items: 2 },
+                768: { items: 3 },
+                992: { items: 4 }
+            }
+        });
+
+        // Handle thumbnail clicks
+        $('.owl-dot').on('click', function() {
+            var index = $(this).index();
+            $('.product-single-carousel').trigger('to.owl.carousel', [index, 300]);
+            $('.owl-dot').removeClass('active');
+            $(this).addClass('active');
+        });
+    }
+
+    // Initialize tabs
+    if (typeof $ !== 'undefined') {
+        $('.nav-tabs a').on('click', function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
+    }
+
+    // Initial price calculation
+    updatePrice();
+});
+</script>
+
+<style>
+/* Update styles to use modern forced-colors-mode instead of -ms-high-contrast */
+@media (forced-colors: active) {
+    .quantity-btn,
+    .btn-brown,
+    .nav-link,
+    .product-action .btn-icon {
+        forced-color-adjust: none;
+    }
+}
+
+/* Existing styles */
+.product-action-container {
+    margin-top: 1rem;
+}
+
+.quantity-label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.quantity-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quantity-input {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.quantity-btn {
+    width: 40px;
+    height: 40px;
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quantity-btn:hover {
+    background: #e4e4e4;
+}
+
+.quantity-btn i {
+    font-size: 14px;
+    color: #666;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Remove preload warnings by adding correct 'as' attributes */
+link[rel="preload"] {
+    as: style;
+}
+link[rel="preload"][href*=".js"] {
+    as: script;
+}
+link[rel="preload"][href*=".woff"] {
+    as: font;
+    crossorigin: anonymous;
+}
+
+/* Price and quantity styling */
+.price-box {
+    margin-bottom: 2rem;
+}
+
+.price-box .total-price {
+    font-size: 2.2rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.8rem;
+    color: #222529;
+}
+
+.price-box .product-material-height-price {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #222529;
+    line-height: 1.4;
+}
+
+.quantity-label {
+    font-size: 2.2rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 1.2rem;
+    color: #222529;
+}
+
+.quantity-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.quantity-input {
+    width: 100px;
+    height: 55px;
+    text-align: center;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1.8rem;
+    font-weight: 500;
+}
+
+.quantity-btn {
+    width: 55px;
+    height: 55px;
+    background: #f4f4f4;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.quantity-btn:hover {
+    background: #e4e4e4;
+    border-color: #ccc;
+}
+
+.quantity-btn i {
+    font-size: 20px;
+    color: #444;
+}
+
+/* Improve focus states for accessibility */
+.quantity-input:focus,
+.quantity-btn:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.product-options-wrapper {
+    padding: 20px 0;
+}
+
+.category-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.option-section {
+    margin-bottom: 30px;
+}
+
+.variant__label {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #000;
+    text-transform: uppercase;
+    background: #fff;
+    padding: 10px 15px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.variant__label b {
+    font-weight: 600;
+    color: #000;
+}
+
+.variant__label span + b {
+    margin-left: 0.5rem;
+    color: #28a745;
+}
+
+.material-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.material-option {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.3s ease;
+    min-width: auto;
+}
+
+.material-option img {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 10px;
+    object-fit: contain;
+}
+
+.material-option span {
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+    .material-options {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .material-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .material-options {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .material-option {
+        padding: 8px;
+    }
+    
+    .material-option img {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 8px;
+    }
+    
+    .material-option span {
+        font-size: 12px;
+    }
+}
+
+.material-option.selected-material {
+    border-color: #28a745;
+    background-color: #f8fff9;
+}
+
+.height-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.height-option {
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    color: #333;
+}
+
+.height-option.selected-height {
+    border-color: #28a745;
+    background-color: #f8fff9;
+    font-weight: 600;
+}
+
+.selected-height-display {
+    margin-left: 10px;
+    color: #28a745;
+}
+
+.price-box {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.total-price {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.product-material-height-price {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+}
+
+.quantity-container {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.quantity-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+.quantity-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.quantity-input {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.btn-brown {
+    margin-top: 20px;
+    background-color: #795548;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 4px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.btn-brown:hover {
+    background-color: #5d4037;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .material-options {
+        flex-direction: column;
+    }
+    
+    .material-option {
+        width: 100%;
+    }
+    
+    .height-options {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    }
+}
+
+/* Override existing styles with more specific selectors */
+.product-options-wrapper .variant__label,
+.product-filters-container .variant__label,
+.option-section .variant__label,
+label.variant__label {
+    display: flex !important;
+    align-items: center !important;
+    font-size: 16px !important;
+    margin-bottom: 15px !important;
+    color: #000 !important;
+    text-transform: uppercase !important;
+    background: #fff !important;
+    padding: 10px 15px !important;
+    border-radius: 4px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+}
+
+.variant__label b {
+    font-weight: 600 !important;
+    color: #000 !important;
+}
+
+.variant__label span + b {
+    margin-left: 0.5rem !important;
+    color: #28a745 !important;
+}
+
+.product-options-wrapper {
+    padding: 20px 0;
+}
+
+.price-display-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.price-display-row .total-price {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 0;
+    font-weight: 500;
+}
+
+.price-display-row .product-material-height-price {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    text-align: right;
+}
+
+.quantity-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+.quantity-btn i {
+    font-size: 16px;
+    color: #333;
+}
+
+.price-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.vat-info {
+    font-size: 14px;
+    color: #777;
+    font-style: italic;
+    margin-top: 2px;
+}
+
+.price-display-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Material selection
+    const materialOptions = document.querySelectorAll('.material-option');
+    materialOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            materialOptions.forEach(opt => opt.classList.remove('selected-material'));
+            this.classList.add('selected-material');
+            
+            // Update hidden input for form submission
+            const selectedMaterialInput = document.getElementById('selected_material');
+            if (selectedMaterialInput) {
+                selectedMaterialInput.value = this.dataset.attrib;
+            }
+            
+            updatePrice();
+        });
+    });
+    
+    // Glass type selection
+    const glassOptions = document.querySelectorAll('.glass-option');
+    glassOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            glassOptions.forEach(opt => opt.classList.remove('selected-glass'));
+            this.classList.add('selected-glass');
+            
+            // Update hidden input for form submission
+            const selectedGlassInput = document.getElementById('selected_glass');
+            if (selectedGlassInput) {
+                selectedGlassInput.value = this.dataset.attrib;
+            }
+            
+            updatePrice();
+        });
+    });
+
+    // Height selection
+    const heightOptions = document.querySelectorAll('.height-option');
+    const heightDisplay = document.querySelector('.selected-height-display');
+    heightOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            heightOptions.forEach(opt => opt.classList.remove('selected-height'));
+            this.classList.add('selected-height');
+            heightDisplay.textContent = this.dataset.attrib;
+            
+            // Update the display in other places if needed
+            const variantValue = document.querySelector('.selectec_variant_value');
+            if (variantValue) {
+                variantValue.textContent = this.dataset.attrib;
+            }
+            
+            // Update hidden input for form submission
+            const selectedHeightInput = document.getElementById('selected_height');
+            if (selectedHeightInput) {
+                selectedHeightInput.value = this.dataset.attrib;
+            }
+            
+            updatePrice();
+        });
+    });
+
+    // Quantity controls
+    const quantityInput = document.querySelector('.quantity-input');
+    const decreaseBtn = document.querySelector('.decrease');
+    const increaseBtn = document.querySelector('.increase');
+
+    decreaseBtn.addEventListener('click', function() {
+        let value = parseInt(quantityInput.value);
+        if (value > 1) {
+            quantityInput.value = value - 1;
+            updatePrice();
+        }
+    });
+
+    increaseBtn.addEventListener('click', function() {
+        let value = parseInt(quantityInput.value);
+        if (value < 100) {
+            quantityInput.value = value + 1;
+            updatePrice();
+        }
+    });
+
+    quantityInput.addEventListener('input', function() {
+        let value = parseInt(this.value);
+        if (isNaN(value) || value < 1) {
+            this.value = 1;
+        } else if (value > 100) {
+            this.value = 100;
+        }
+        updatePrice();
+    });
+
+    function updatePrice() {
+        const selectedMaterial = document.querySelector('.material-option.selected-material');
+        const selectedHeight = document.querySelector('.height-option.selected-height');
+        const quantity = parseInt(quantityInput.value) || 1;
+        
+        if (selectedMaterial && selectedHeight) {
+            // Here you would typically make an AJAX call to get the price
+            // For now, we'll use a simple calculation
+            const basePrice = 99.00; // Base price in euros
+            const priceDisplay = document.querySelector('.product-material-height-price');
+            const total = basePrice * quantity;
+            
+            if (quantity > 1) {
+                priceDisplay.textContent = `${basePrice.toFixed(2)}€/kom (${total.toFixed(2)}€ ukupno)`;
+            } else {
+                priceDisplay.textContent = `${basePrice.toFixed(2)}€`;
+            }
+        }
+    }
+
+    // Initialize price on page load
+    updatePrice();
+	});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Ensure Font Awesome is loaded
+    if (!document.querySelector('link[href*="font-awesome"]')) {
+        const fontAwesome = document.createElement('link');
+        fontAwesome.rel = 'stylesheet';
+        fontAwesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+        document.head.appendChild(fontAwesome);
+    }
+
+    // Check if icons are rendered properly after a short delay
+    setTimeout(function() {
+        const plusIcon = document.querySelector('.increase i');
+        const minusIcon = document.querySelector('.decrease i');
+        
+        // If icons are not showing correctly, replace with text
+        if (plusIcon && !plusIcon.offsetWidth) {
+            plusIcon.parentNode.innerHTML = '+';
+        }
+        if (minusIcon && !minusIcon.offsetWidth) {
+            minusIcon.parentNode.innerHTML = '-';
+        }
+    }, 500);
+    });
+</script>
+
+<style>
+/* Quantity button styles */
+.quantity-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.quantity-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    min-width: 80px;
+}
+
+.quantity-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quantity-btn {
+    width: 40px;
+    height: 40px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: normal;
+    color: #333;
+    line-height: 1;
+    padding: 0;
+    transition: background-color 0.3s ease;
+    font-family: Arial, sans-serif;
+}
+
+.quantity-btn.increase {
+    font-size: 24px;
+    line-height: 22px;
+}
+
+.quantity-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.quantity-input {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    margin: 0;
+}
+
+/* Remove browser's default number input spinners */
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.quantity-input[type=number] {
+    -moz-appearance: textfield;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const quantityInput = document.querySelector('.quantity-input');
+    const decreaseBtn = document.querySelector('.decrease');
+    const increaseBtn = document.querySelector('.increase');
+    
+    function updateQuantity(change) {
+        let currentValue = parseInt(quantityInput.value) || 1;
+        let newValue = currentValue + (change);
+        
+        // Ensure value stays within min and max bounds
+        newValue = Math.max(1, Math.min(100, newValue));
+        
+        if (quantityInput.value !== newValue.toString()) {
+            quantityInput.value = newValue;
+            updatePrice();
+        }
+    }
+
+    decreaseBtn?.addEventListener('click', () => updateQuantity(-1));
+    increaseBtn?.addEventListener('click', () => updateQuantity(1));
+    
+    quantityInput?.addEventListener('input', function() {
+        let value = parseInt(this.value) || 1;
+        value = Math.max(1, Math.min(100, value));
+        this.value = value;
+        updatePrice();
+    });
+
+    // Initial update
+    updatePrice();
+});
+
+function updatePrice() {
+    const quantity = parseInt(document.querySelector('.quantity-input')?.value) || 1;
+    const basePrice = <?php echo isset($product->rate) ? $product->rate : '0'; ?>;
+    const total = basePrice * quantity;
+    
+    const priceDisplay = document.querySelector('.product-material-height-price');
+    if (priceDisplay) {
+        if (!isNaN(total) && total > 0) {
+            priceDisplay.textContent = quantity > 1 ? 
+                `${basePrice.toFixed(2)}€/kom (${total.toFixed(2)}€ ukupno)` : 
+                `${basePrice.toFixed(2)}€`;
+        } else {
+            priceDisplay.textContent = "Cijena na upit";
+        }
+    }
+}
+</script>
+
+<div class="quantity-container">
+    <button type="button" class="quantity-btn decrease"></button>
+    <input type="text" name="quantity" class="quantity-input" value="1" min="1">
+    <button type="button" class="quantity-btn increase"></button>
+</div>
+
+<style>
+.quantity-container button.quantity-btn {
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background-color: #545454 !important;
+    border: 1px solid #545454 !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #ffffff !important;
+}
+
+.quantity-container button.quantity-btn:hover {
+    background-color: #444444 !important;
+    border-color: #444444 !important;
+}
+
+.quantity-container button.quantity-btn::before {
+    display: block !important;
+    font-size: 24px !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #ffffff !important;
+}
+
+.quantity-container button.quantity-btn.decrease::before {
+    content: '−' !important;
+}
+
+.quantity-container button.quantity-btn.increase::before {
+    content: '+' !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add FontAwesome from CDN for icons
+    if (!document.getElementById('font-awesome-css')) {
+        const fontAwesome = document.createElement('link');
+        fontAwesome.id = 'font-awesome-css';
+        fontAwesome.rel = 'stylesheet';
+        fontAwesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+        document.head.appendChild(fontAwesome);
+    }
+
+    // Initialize quantity controls
+    const quantityInput = document.querySelector('.quantity-input');
+    const decreaseBtn = document.querySelector('.decrease');
+    const increaseBtn = document.querySelector('.increase');
+    
+    function updateQuantity(change) {
+        let currentValue = parseInt(quantityInput.value) || 1;
+        let newValue = currentValue + change;
+        newValue = Math.max(1, Math.min(100, newValue));
+        quantityInput.value = newValue;
+        quantityInput.dispatchEvent(new Event('change'));
+    }
+
+    decreaseBtn?.addEventListener('click', () => updateQuantity(-1));
+    increaseBtn?.addEventListener('click', () => updateQuantity(1));
+    quantityInput?.addEventListener('input', function() {
+        let value = parseInt(this.value) || 1;
+        this.value = Math.max(1, Math.min(100, value));
+        });
+    });
+</script>
+
+<?php
+// Define image paths for materials with proper path checking
+$materialImages = [
+    'Pocinčani čelik' => 'assets/front/assets/images/material/steel.jfif',
+    'Aluminij' => 'assets/front/assets/images/material/aluminum.jfif',
+    'Nehrđajući čelik-inox' => 'assets/front/assets/images/materials/stainless.jpg'
+];
+
+?>
+
+<!-- Cart functionality -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listener to the submit order button
+    const submitOrderBtn = document.getElementById('submitOrder');
+    if (!submitOrderBtn) {
+        console.error('Submit order button not found');
+        return;
+    }
+    
+    submitOrderBtn.addEventListener('click', function() {
+        // Get the product ID - for module products or regular products
+        const productId = <?php
+            if (isset($module_product['id'])) {
+                echo $module_product['id'];
+            } elseif (isset($product->id)) {
+                echo $product->id;
+            } else {
+                echo '0';
+            }
+        ?>;
+        
+        // Get the quantity from the first quantity input on the page
+        const quantityInput = document.querySelector('.quantity-input');
+        const quantity = quantityInput ? Math.max(1, parseInt(quantityInput.value) || 1) : 1;
+        
+        // Get the selected material and height
+        const selectedMaterialEl = document.querySelector('.material-option.selected-material');
+        const selectedGlassEl = document.querySelector('.glass-option.selected-glass');
+        const selectedHeightEl = document.querySelector('.height-option.selected-height');
+        
+        const selectedMaterial = selectedMaterialEl ? selectedMaterialEl.dataset.attrib || '' : '';
+        const selectedGlass = selectedGlassEl ? selectedGlassEl.dataset.attrib || '' : '';
+        const selectedHeight = selectedHeightEl ? selectedHeightEl.dataset.attrib || '' : '';
+        
+        // Find the matching variation ID 
+        let variationId = '';
+        
+        <?php if (isset($variations) && !empty($variations)): ?>
+        // Check each variation to find a match based on selected options
+        const variations = <?php 
+            $variationsArray = [];
+            foreach ($variations as $var) {
+                $variationsArray[] = [
+                    'id' => $var->id,
+                    'material' => $var->variation_name === 'Vrsta materijala' ? $var->variation_value : '',
+                    'glass' => $var->variation_name === 'Vrsta stakla' ? $var->variation_value : '',
+                    'height' => $var->variation_name === 'Visina' ? $var->variation_value : ''
+                ];
+            }
+            echo json_encode($variationsArray);
+        ?>;
+        
+        // Log the variations data for troubleshooting
+        console.log('Available variations:', variations);
+        console.log('Selected material:', selectedMaterial);
+        console.log('Selected glass:', selectedGlass);
+        console.log('Selected height:', selectedHeight);
+        
+        // Look for a material match first (priority)
+        if (selectedMaterial) {
+            for (const variation of variations) {
+                if (variation.material === selectedMaterial) {
+                    variationId = variation.id;
+                    console.log('Found material match - ID:', variationId);
+                    break;
+                }
+            }
+        }
+        
+        // If no material match but we have glass type, look for glass match
+        if (!variationId && selectedGlass) {
+            for (const variation of variations) {
+                if (variation.glass === selectedGlass) {
+                    variationId = variation.id;
+                    console.log('Found glass match - ID:', variationId);
+                    break;
+                }
+            }
+        }
+        
+        // If no material or glass match but we have height, look for height match
+        if (!variationId && selectedHeight) {
+            for (const variation of variations) {
+                if (variation.height === selectedHeight) {
+                    variationId = variation.id;
+                    console.log('Found height match - ID:', variationId);
+                    break;
+                }
+            }
+        }
+        <?php endif; ?>
+        
+        // Get the price directly from the displayed price element
+        const priceElement = document.querySelector('.product-material-height-price');
+        let calculatedPrice = <?php echo isset($product->rate) ? $product->rate : '0'; ?>;
+        
+        if (priceElement) {
+            // Extract the price from the displayed element
+            const priceText = priceElement.textContent.trim();
+            console.log('Price text from element:', priceText);
+            
+            // Handle both single price and price with total format (e.g. "100.00€" or "100.00€/kom (500.00€ ukupno)")
+            // Match the first price in the string (the unit price)
+            const priceMatch = priceText.match(/(\d+)[,\.](\d+)/);
+            
+            if (priceMatch) {
+                // We have groups: [1]=whole number part, [2]=decimal part
+                // Combine them properly: whole + '.' + decimal
+                calculatedPrice = parseFloat(priceMatch[1] + '.' + priceMatch[2]);
+                console.log('Extracted price from display (fixed decimal):', calculatedPrice);
+            }
+        }
+        
+        console.log('Adding to cart:', {
+            product_id: productId,
+            product_variation_id: variationId,
+            quantity: quantity,
+            selected_height: selectedHeight,
+            selected_material: selectedMaterial,
+            selected_glass: selectedGlass,
+            calculated_price: calculatedPrice
+        });
+        
+        // Check if product ID is valid
+        if (productId > 0) {
+            // Get CSRF token
+            const csrfToken = '<?php echo $this->security->get_csrf_hash(); ?>';
+            const csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>';
+            
+            // Use AJAX to add to cart with proper CSRF protection
+            $.ajax({
+                url: '<?php echo site_url('products/client/add_cart'); ?>',
+                type: 'POST',
+                data: {
+                    [csrfName]: csrfToken,
+                    product_id: productId,
+                    product_variation_id: variationId,
+                    quantity: quantity,
+                    selected_height: selectedHeight,
+                    selected_material: selectedMaterial,
+                    selected_glass: selectedGlass,
+                    calculated_price: calculatedPrice
+                },
+                success: function(response) {
+                    console.log('Response:', response);
+                    console.log('Sending price to cart:', calculatedPrice);
+                    
+                    // Remove the alert and directly redirect to cart page
+                    // alert('Proizvod je dodan u košaricu!');
+                    
+                    // Update cart count in the header
+                    try {
+                        const cartData = JSON.parse(response);
+                        const cartCount = cartData.length;
+                        
+                        // Update all cart count elements
+                        const cartCountElements = document.querySelectorAll('.cart-count');
+                        if (cartCountElements.length > 0) {
+                            cartCountElements.forEach(function(element) {
+                                if (element) {
+                                    element.textContent = cartCount;
+                                    
+                                    // Make sure it's visible
+                                    element.classList.remove('d-none');
+                                    if (element.parentElement && element.parentElement.classList.contains('cart-toggle')) {
+                                        element.parentElement.classList.add('has-items');
+                                    }
+                                }
+                            });
+                        }
+                    } catch (e) {
+                        console.error('Error updating cart count:', e);
+                    }
+                    
+                    // Redirect to cart page
+                    window.location.href = '<?php echo site_url('home/cart'); ?>';
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error adding to cart:', error);
+                    console.error('Response:', xhr.responseText);
+                    alert('Došlo je do greške prilikom dodavanja u košaricu.');
+                }
+            });
+        } else {
+            alert('Proizvod nije pronađen.');
+        }
+    });
+});
+</script>
+
+<!-- Fix for quantity stepping by 3 instead of 1 -->
+<script>
+// Function to fix quantity buttons - will run on window load to ensure it overrides all other scripts
+window.addEventListener('load', function() {
+    // Get the updatePrice function from jQuery
+    let updatePriceFunction = null;
+    
+    // Look for existing update price functions in jQuery
+    if (typeof $ !== 'undefined' && typeof $.fn !== 'undefined') {
+        // Store the original updatePrice function from the jQuery script
+        if ($._data && $('.quantity-input')[0] && $._data($('.quantity-input')[0], 'events')) {
+            const inputEvents = $._data($('.quantity-input')[0], 'events');
+            if (inputEvents && inputEvents.input && inputEvents.input.length > 0) {
+                for (let i = 0; i < inputEvents.input.length; i++) {
+                    const handler = inputEvents.input[i].handler;
+                    if (handler && handler.toString().indexOf('updatePrice') !== -1) {
+                        updatePriceFunction = handler;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    // Completely remove and recreate all quantity controls
+    document.querySelectorAll('.quantity-container').forEach(container => {
+        // Get current values
+        const input = container.querySelector('.quantity-input');
+        const currentValue = parseInt(input.value) || 1;
+        const minValue = parseInt(input.min) || 1;
+        const maxValue = parseInt(input.max) || 100;
+        
+        // Create new elements
+        const newContainer = document.createElement('div');
+        newContainer.className = 'quantity-container';
+        
+        const decreaseBtn = document.createElement('button');
+        decreaseBtn.type = 'button';
+        decreaseBtn.className = 'quantity-btn decrease';
+        decreaseBtn.setAttribute('aria-label', 'Decrease quantity');
+        decreaseBtn.innerHTML = '<i class="icon-minus"></i>';
+        decreaseBtn.style.cssText = 'width: 40px !important; height: 40px !important; padding: 0 !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; background-color: #545454; color: white; border-color: #545454;';
+        
+        const newInput = document.createElement('input');
+        newInput.type = 'number';
+        newInput.className = 'quantity-input';
+        newInput.value = currentValue;
+        newInput.min = minValue;
+        newInput.max = maxValue;
+        newInput.step = 1;
+        
+        const increaseBtn = document.createElement('button');
+        increaseBtn.type = 'button';
+        increaseBtn.className = 'quantity-btn increase';
+        increaseBtn.setAttribute('aria-label', 'Increase quantity');
+        increaseBtn.innerHTML = '<i class="icon-plus"></i>';
+        increaseBtn.style.cssText = 'width: 40px !important; height: 40px !important; padding: 0 !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; background-color: #545454; color: white; border-color: #545454;';
+        
+        // Add to container
+        newContainer.appendChild(decreaseBtn);
+        newContainer.appendChild(newInput);
+        newContainer.appendChild(increaseBtn);
+        
+        // Replace old container
+        container.parentNode.replaceChild(newContainer, container);
+        
+        // Add event listeners with capturing phase
+        decreaseBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            let value = parseInt(newInput.value);
+            if (value > minValue) {
+                newInput.value = value - 1;
+                
+                // Trigger change events
+                newInput.dispatchEvent(new Event('change', {bubbles: true}));
+                newInput.dispatchEvent(new Event('input', {bubbles: true}));
+                
+                // Call all price update functions
+                if (typeof $ !== 'undefined') {
+                    // Call the jQuery updatePrice function
+                    if (typeof window.updatePrice === 'function') {
+                        window.updatePrice();
+                    }
+                    // Also trigger the jQuery handler directly for input event
+                    $(newInput).trigger('input');
+                }
+                
+                // Call the price update function from the other script
+                if (typeof updatePrice === 'function') {
+                    updatePrice();
+                }
+            }
+            return false;
+        }, true);
+        
+        increaseBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            let value = parseInt(newInput.value);
+            if (value < maxValue) {
+                newInput.value = value + 1;
+                
+                // Trigger change events
+                newInput.dispatchEvent(new Event('change', {bubbles: true}));
+                newInput.dispatchEvent(new Event('input', {bubbles: true}));
+                
+                // Call all price update functions
+                if (typeof $ !== 'undefined') {
+                    // Call the jQuery updatePrice function
+                    if (typeof window.updatePrice === 'function') {
+                        window.updatePrice();
+                    }
+                    // Also trigger the jQuery handler directly for input event
+                    $(newInput).trigger('input');
+                }
+                
+                // Call the price update function from the other script
+                if (typeof updatePrice === 'function') {
+                    updatePrice();
+                }
+            }
+            return false;
+        }, true);
+        
+        newInput.addEventListener('input', function() {
+            let value = parseInt(this.value) || minValue;
+            this.value = Math.max(minValue, Math.min(maxValue, value));
+            
+            // Call all price update functions
+            if (typeof $ !== 'undefined') {
+                // Call the jQuery updatePrice function
+                if (typeof window.updatePrice === 'function') {
+                    window.updatePrice();
+                }
+                // Also trigger the jQuery handler directly for input event
+                $(this).trigger('input');
+            }
+            
+            // Call the price update function from the other script
+            if (typeof updatePrice === 'function') {
+                updatePrice();
+            }
+        }, true);
+    });
+    
+    // Prevent any other scripts from attaching event handlers
+    const originalAddEventListener = EventTarget.prototype.addEventListener;
+    EventTarget.prototype.addEventListener = function(type, listener, options) {
+        if ((this.classList && this.classList.contains('quantity-btn')) && 
+            (type === 'click' || type === 'mousedown' || type === 'mouseup')) {
+            return; // Block new event listeners on quantity buttons
+        }
+        return originalAddEventListener.call(this, type, listener, options);
+    };
+});
+</script>
+
+<script>
+// Enable the thumbnails to change the main image
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if our custom gallery is active
+    if (window.customGalleryActive) {
+        console.log("Custom gallery is active, skipping this initialization");
+        return;
+    }
+    
+    // Get all thumbnail dots
+    const thumbnailDots = document.querySelectorAll('.prod-thumbnail .owl-dot');
+    
+    // Get the owl carousel main instance
+    const mainCarousel = document.querySelector('.product-single-carousel');
+    let owlInstance = null;
+    
+    // Wait for the OwlCarousel to be initialized
+    const checkOwl = setInterval(function() {
+        if (typeof $ !== 'undefined' && $.fn.owlCarousel && $(mainCarousel).data('owl.carousel')) {
+            clearInterval(checkOwl);
+            owlInstance = $(mainCarousel).data('owl.carousel');
+            
+            // Add click event to each thumbnail
+            thumbnailDots.forEach((dot, index) => {
+                dot.addEventListener('click', function() {
+                    // Update active state for dots
+                    thumbnailDots.forEach(d => d.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Trigger carousel to show the selected slide
+                    if (owlInstance) {
+                        owlInstance.to(index);
+                    } else {
+                        // Fallback if owl instance is not available
+                        $(mainCarousel).trigger('to.owl.carousel', [index, 300, true]);
+                    }
+                });
+            });
+            
+            // Also handle owl carousel slide change to update thumbnail active state
+            $(mainCarousel).on('translated.owl.carousel', function(event) {
+                const currentIndex = event.item.index - event.relatedTarget._clones.length / 2;
+                thumbnailDots.forEach((dot, i) => {
+                    if (i === currentIndex % thumbnailDots.length) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            });
+        }
+    }, 100);
+    
+    // Fallback if OwlCarousel is not available or initialized
+    // This handles direct image swapping without animation
+    if (!document.querySelector('.owl-carousel')) {
+        const mainImages = document.querySelectorAll('.product-single-image');
+        
+        thumbnailDots.forEach((dot, index) => {
+            dot.addEventListener('click', function() {
+                // Update active state
+                thumbnailDots.forEach(d => d.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Hide all images and show the selected one
+                if (mainImages.length > index) {
+                    mainImages.forEach(img => img.style.display = 'none');
+                    mainImages[index].style.display = 'block';
+                }
+            });
+        });
+    }
+    
+    // Initialize the first thumbnail as active if none are active
+    if (!document.querySelector('.prod-thumbnail .owl-dot.active')) {
+        const firstDot = document.querySelector('.prod-thumbnail .owl-dot');
+        if (firstDot) {
+            firstDot.classList.add('active');
+        }
+    }
+});
+</script>
+
+<script>
+// Gallery thumbnails functionality - immediate execution without waiting for DOMContentLoaded
+(function() {
+    // Check if our custom gallery is active
+    if (window.customGalleryActive) {
+        console.log("Custom gallery is active, skipping this initialization");
+        return;
+    }
+    
+    // Direct initialization of thumbnail functionality
+    function initThumbnails() {
+        console.log("Initializing gallery thumbnails");
+        const thumbnails = document.querySelectorAll('.prod-thumbnail .owl-dot');
+        const carousel = document.querySelector('.product-single-carousel');
+        const carouselItems = document.querySelectorAll('.product-single-carousel .product-item');
+        
+        console.log("Found thumbnails:", thumbnails.length);
+        console.log("Found carousel items:", carouselItems.length);
+        
+        if (!thumbnails.length || !carouselItems.length) {
+            console.warn("Missing gallery elements", {
+                thumbnails: thumbnails.length,
+                carouselItems: carouselItems.length
+            });
+            return;
+        }
+        
+        // Set first thumbnail as active if none are
+        let hasActive = false;
+        thumbnails.forEach(thumb => {
+            if (thumb.classList.contains('active')) hasActive = true;
+        });
+        
+        if (!hasActive && thumbnails.length > 0) {
+            thumbnails[0].classList.add('active');
+        }
+        
+        // Set first item visible if needed
+        if (carouselItems.length > 0) {
+            // Make sure all items are properly initialized
+            carouselItems.forEach((item, i) => {
+                if (i === 0) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // Add click handlers to each thumbnail
+        thumbnails.forEach((thumb, index) => {
+            thumb.addEventListener('click', function(e) {
+                console.log("Thumbnail clicked:", index);
+                
+                // Mark this thumbnail as active
+                thumbnails.forEach(t => t.classList.remove('active'));
+                thumb.classList.add('active');
+                
+                // First try with Owl Carousel if available
+                if (typeof $ !== 'undefined' && $.fn.owlCarousel && $(carousel).data('owl.carousel')) {
+                    try {
+                        console.log("Using Owl Carousel to switch slides");
+                        $(carousel).trigger('to.owl.carousel', [index, 300, true]);
+                    } catch (err) {
+                        console.warn('Owl Carousel error:', err);
+                        directImageSwitch(index);
+                    }
+                } else {
+                    // Direct image switching as fallback
+                    directImageSwitch(index);
+                }
+            });
+        });
+        
+        // Direct image switching function - simpler approach
+        function directImageSwitch(index) {
+            console.log("Using direct image switch to index:", index);
+            if (index < 0 || index >= carouselItems.length) {
+                console.warn("Invalid index:", index, "Total items:", carouselItems.length);
+                return;
+            }
+            
+            carouselItems.forEach((item, i) => {
+                // Use display property for compatibility
+                if (i === index) {
+                    console.log("Showing item at index", i);
+                    item.style.display = 'block';
+                    item.style.opacity = '1';
+                    item.style.visibility = 'visible';
+                } else {
+                    console.log("Hiding item at index", i);
+                    item.style.display = 'none';
+                    item.style.opacity = '0';
+                    item.style.visibility = 'hidden';
+                }
+            });
+        }
+    }
+    
+    // Initialize on both DOMContentLoaded and window.load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOMContentLoaded - initializing thumbnails");
+            initThumbnails();
+            // Try again after a delay as some scripts might initialize late
+            setTimeout(initThumbnails, 500);
+        });
+    } else {
+        // DOM already loaded
+        console.log("DOM already loaded - initializing thumbnails immediately");
+        initThumbnails();
+    }
+    
+    // Also initialize on window load to ensure images are fully loaded
+    window.addEventListener('load', function() {
+        console.log("Window loaded - initializing thumbnails");
+        initThumbnails();
+    });
+    
+    // Additional initialization after 1 second to handle any delayed scripts
+    setTimeout(function() {
+        console.log("Delayed initialization after 1 second");
+        initThumbnails();
+    }, 1000);
+})();
+</script>
+
+<script>
+// Simple gallery script - loads immediately to ensure it runs before other scripts
+(function() {
+    function initGallery() {
+        // Only proceed if we have jQuery available
+        if (typeof jQuery === 'undefined') {
+            console.warn('Gallery init: jQuery not found, retrying in 200ms');
+            setTimeout(initGallery, 200);
+            return;
+        }
+        
+        jQuery(document).ready(function($) {
+            console.log('Gallery: Initializing gallery with jQuery');
+            
+            // Make sure first thumbnail is marked as active
+            if (!$('.prod-thumbnail .owl-dot.active').length) {
+                $('.prod-thumbnail .owl-dot:first').addClass('active');
+            }
+            
+            // Set up click handlers for thumbnails
+            $('.prod-thumbnail .owl-dot').on('click', function() {
+                var $this = $(this);
+                var index = $this.index();
+                
+                console.log('Gallery: Thumbnail clicked at index', index);
+                
+                // Update active states
+                $('.prod-thumbnail .owl-dot').removeClass('active');
+                $this.addClass('active');
+                
+                // Try to use the OwlCarousel if available
+                var $carousel = $('.product-single-carousel');
+                
+                if ($carousel.length && $.fn.owlCarousel && $carousel.data('owl.carousel')) {
+                    try {
+                        console.log('Gallery: Using OwlCarousel API');
+                        $carousel.trigger('to.owl.carousel', [index, 300]);
+                    } catch (e) {
+                        console.warn('Gallery: OwlCarousel error:', e);
+                        fallbackToDirectSwitch(index);
+                    }
+                } else {
+                    console.log('Gallery: OwlCarousel not found, using fallback');
+                    fallbackToDirectSwitch(index);
+                }
+            });
+            
+            // Check if OwlCarousel needs initialization
+            var $carousel = $('.product-single-carousel');
+            if ($carousel.length && $.fn.owlCarousel && !$carousel.data('owl.carousel')) {
+                console.log('Gallery: Initializing OwlCarousel');
+                $carousel.owlCarousel({
+                    items: 1,
+                    nav: true,
+                    dots: false,
+                    loop: false,
+                    margin: 0,
+                    navText: ['<i class="icon-angle-left">', '<i class="icon-angle-right">']
+                });
+            }
+            
+            // Set up carousel change event to keep thumbnails in sync
+            $carousel.on('translated.owl.carousel', function(event) {
+                if (event.item) {
+                    var index = event.item.index;
+                    console.log('Gallery: Carousel translated to index', index);
+                    
+                    // Update active thumbnail
+                    $('.prod-thumbnail .owl-dot').removeClass('active');
+                    $('.prod-thumbnail .owl-dot').eq(index).addClass('active');
+                }
+            });
+            
+            // Function to manually switch images when carousel API is not available
+            function fallbackToDirectSwitch(index) {
+                console.log('Gallery: Using direct image switch to index', index);
+                
+                // Get all items in the carousel
+                var $items = $('.product-single-carousel .product-item');
+                
+                if (!$items.length) {
+                    console.warn('Gallery: No carousel items found for direct switch');
+                    return;
+                }
+                
+                // Hide all items and show the selected one
+                $items.hide();
+                $items.eq(index).show();
+            }
+            
+            // Initial setup - ensure first slide is visible if the carousel isn't initialized
+            if (!$carousel.data('owl.carousel')) {
+                console.log('Gallery: Setting initial state with first image visible');
+                var $items = $('.product-single-carousel .product-item');
+                $items.hide();
+                $items.eq(0).show();
+            }
+        });
+    }
+    
+    // Start immediately
+    initGallery();
+    
+    // Also try again after a short delay and on window load
+    setTimeout(initGallery, 500);
+    window.addEventListener('load', initGallery);
+})();
+</script>
+
+<script>
+// Set a flag to indicate our custom gallery is active
+window.customGalleryActive = true;
+</script>
+
+<style>
+/* Product gallery styles */
+.product-single-gallery {
+    position: relative;
+}
+
+.product-single-carousel .product-item {
+    position: relative;
+}
+
+.product-single-carousel .product-single-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.prod-thumbnail {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.prod-thumbnail .owl-dot {
+    cursor: pointer;
+    border: 2px solid #e9e9e9;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
+
+.prod-thumbnail .owl-dot.active {
+    border-color: #28a745;
+    opacity: 1;
+}
+
+.prod-thumbnail .owl-dot:hover {
+    opacity: 0.9;
+}
+
+.prod-thumbnail .owl-dot img {
+    display: block;
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+}
+
+/* Fix for carousel clones */
+.owl-carousel .owl-item.cloned {
+    display: none;
+}
+</style>
+
+<script>
+// Simple, reliable gallery script with direct DOM manipulation
+document.addEventListener('DOMContentLoaded', function() {
+    initGallery();
+    
+    // Also initialize on window load and after a timeout
+    window.addEventListener('load', initGallery);
+    setTimeout(initGallery, 500);
+});
+
+function initGallery() {
+    // Get elements
+    const thumbnails = document.querySelectorAll('.prod-thumbnail .owl-dot');
+    const mainItems = document.querySelectorAll('.product-single-carousel .product-item');
+    
+    // Skip if already initialized or no elements
+    if (window.galleryInitialized || !thumbnails.length || !mainItems.length) {
+        return;
+    }
+    
+    // Function to handle thumbnail click
+    function handleThumbnailClick(index) {
+        // Remove active class from all thumbnails
+        thumbnails.forEach(thumb => thumb.classList.remove('active'));
+        
+        // Add active class to clicked thumbnail
+        if (thumbnails[index]) {
+            thumbnails[index].classList.add('active');
+        }
+        
+        // Hide all main images 
+        mainItems.forEach(item => {
+            item.style.display = 'none';
+        });
+        
+        // Show the corresponding main image
+        if (mainItems[index]) {
+            mainItems[index].style.display = 'block';
+        }
+    }
+    
+    // Add click handlers to all thumbnails
+    thumbnails.forEach((thumbnail, index) => {
+        thumbnail.addEventListener('click', function(e) {
+            console.log('Thumbnail clicked:', index);
+            e.preventDefault();
+            handleThumbnailClick(index);
+        });
+    });
+    
+    // Force display style on all main items to ensure they are properly hidden/shown
+    mainItems.forEach((item, index) => {
+        if (index === 0) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    
+    // Make first thumbnail active
+    if (thumbnails[0]) {
+        thumbnails[0].classList.add('active');
+    }
+    
+    // Mark as initialized to avoid duplicate setup
+    window.galleryInitialized = true;
+    
+    console.log('Gallery initialized with', thumbnails.length, 'thumbnails and', mainItems.length, 'main items');
+}
+</script>
+
+<style>
+/* Enhanced thumbnail styles for better visibility */
+.prod-thumbnail {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.prod-thumbnail .owl-dot {
+    cursor: pointer;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.prod-thumbnail .owl-dot.active {
+    border-color: #28a745;
+    transform: scale(1.05);
+}
+
+.prod-thumbnail .owl-dot:hover {
+    border-color: #80bdff;
+}
+
+.prod-thumbnail .owl-dot img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    display: block;
+}
+
+/* Main image styles */
+.product-single-carousel .product-item {
+    display: none;
+}
+
+.product-single-carousel .product-item:first-child {
+    display: block;
+}
+
+/* Override any other gallery styles that might interfere */
+.product-single-carousel.owl-carousel {
+    display: block !important;
+}
+
+.product-single-carousel.owl-carousel .owl-stage-outer,
+.product-single-carousel.owl-carousel .owl-stage,
+.product-single-carousel.owl-carousel .owl-item {
+    overflow: visible;
+    transform: none !important;
+    width: 100% !important;
+    position: relative;
+}
+
+.product-single-carousel.owl-carousel .owl-item.active {
+    z-index: 1;
+}
+
+.product-single-carousel.owl-carousel .owl-nav,
+.product-single-carousel.owl-carousel .owl-dots {
+    display: none;
+}
+</style>
+
+<script>
+$(document).ready(function() {
+    // Initialize related products carousel directly
+    if ($('.products-slider').length) {
+        $('.products-slider').owlCarousel({
+            loop: true,
+            margin: 20,
+            responsiveClass: true,
+            nav: true,
+            navText: ['<i class="icon-angle-left"></i>', '<i class="icon-angle-right"></i>'],
+            dots: true,
+            autoplay: false,
+            autoplayTimeout: 15000,
+            items: 4,
+            responsive: {
+                0: { items: 1 },
+                480: { items: 2 },
+                768: { items: 3 },
+                992: { items: 4 }
+            }
+        });
+    }
+});
+</script>
+
+<style>
+/* Updated quantity controls to ensure equal size and appearance */
+.quantity-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quantity-input {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    margin: 0;
+}
+
+.quantity-btn {
+    width: 40px !important;
+    height: 40px !important;
+    background-color: #545454 !important;
+    border: 1px solid #545454 !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background-color 0.3s ease;
+}
+
+.quantity-btn:hover {
+    background-color: #444444 !important;
+    border-color: #444444 !important;
+}
+
+.quantity-btn i {
+    font-size: 16px !important;
+    color: #ffffff !important;
+    line-height: 16px !important;
+}
+
+/* Improve sizing for + and - icons */
+.quantity-btn.decrease i, 
+.quantity-btn.increase i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+}
+
+/* Fix for Firefox */
+.quantity-input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* Remove browser's default number input spinners */
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+</style>
+
+<!-- New Quantity Controls Style -->
+<style>
+/* Reset quantity controls to ensure consistency */
+.quantity-wrapper {
+    margin-bottom: 20px;
+}
+
+.quantity-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.quantity-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Quantity buttons unified styling */
+.quantity-btn {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 4px !important;
+    background-color: #545454 !important;
+    border: none !important;
+    color: white !important;
+    font-weight: bold !important;
+    font-size: 18px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s ease-in-out !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    position: relative !important;
+}
+
+/* Hide any existing icons inside buttons */
+.quantity-btn i {
+    display: none !important;
+}
+
+/* Hover state */
+.quantity-btn:hover {
+    background-color: #444444 !important;
+}
+
+/* Active/pressed state */
+.quantity-btn:active {
+    background-color: #393939 !important;
+}
+
+/* Input field styling */
+.quantity-input {
+    width: 60px !important;
+    height: 40px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    text-align: center !important;
+    font-size: 16px !important;
+    padding: 0 8px !important;
+    margin: 0 !important;
+}
+
+/* Remove browser's default number input spinners */
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+}
+
+.quantity-input[type=number] {
+    -moz-appearance: textfield !important;
+}
+
+/* Ensure content is centered in buttons */
+.quantity-btn::before {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 12px !important;
+    height: 2px !important;
+    background-color: white !important;
+}
+
+/* Plus sign specific styling */
+.quantity-btn.increase::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 2px !important;
+    height: 12px !important;
+    background-color: white !important;
+}
+</style>
+
+<script type="text/javascript">
+// ... existing code ...
+</script>
+
+<!-- Final quantity button fix -->
+<style>
+/* Complete reset for quantity controls to fix double signs issue */
+.quantity-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* First, completely hide any content inside the buttons */
+.quantity-btn {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 4px !important;
+    background-color: #545454 !important;
+    border: none !important;
+    color: white !important;
+    font-weight: bold !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    position: relative !important;
+}
+
+/* Hide ALL existing content in the buttons */
+.quantity-btn * {
+    display: none !important;
+}
+
+.quantity-btn::before,
+.quantity-btn::after {
+    content: "" !important;
+}
+
+/* Override with new clean signs - horizontal line for both */
+.quantity-btn::before {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 12px !important;
+    height: 2px !important;
+    background-color: white !important;
+}
+
+/* Add vertical line only for plus sign */
+.quantity-btn.increase::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 2px !important;
+    height: 12px !important;
+    background-color: white !important;
+}
+
+/* Input styling */
+.quantity-input {
+    width: 60px !important;
+    height: 40px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    text-align: center !important;
+    font-size: 16px !important;
+    padding: 0 8px !important;
+    margin: 0 !important;
+}
+
+/* Remove browser's default spinners */
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+}
+
+.quantity-input[type=number] {
+    -moz-appearance: textfield !important;
+}
+</style>
+
+<script>
+// Replace all quantity buttons on page load to ensure consistency
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all quantity containers
+    const containers = document.querySelectorAll('.quantity-container');
+    
+    containers.forEach(container => {
+        // Get the current input value
+        const input = container.querySelector('.quantity-input');
+        const value = input ? input.value : 1;
+        
+        // Create new elements
+        const newContainer = document.createElement('div');
+        newContainer.className = 'quantity-container';
+        
+        const decreaseBtn = document.createElement('button');
+        decreaseBtn.type = 'button';
+        decreaseBtn.className = 'quantity-btn decrease';
+        decreaseBtn.setAttribute('aria-label', 'Decrease quantity');
+        
+        const newInput = document.createElement('input');
+        newInput.type = 'number';
+        newInput.className = 'quantity-input';
+        newInput.value = value;
+        newInput.min = 1;
+        newInput.max = 100;
+        newInput.step = 1;
+        
+        const increaseBtn = document.createElement('button');
+        increaseBtn.type = 'button';
+        increaseBtn.className = 'quantity-btn increase';
+        increaseBtn.setAttribute('aria-label', 'Increase quantity');
+        
+        // Add to container
+        newContainer.appendChild(decreaseBtn);
+        newContainer.appendChild(newInput);
+        newContainer.appendChild(increaseBtn);
+        
+        // Replace the old container
+        container.parentNode.replaceChild(newContainer, container);
+        
+        // Add event listeners
+        decreaseBtn.addEventListener('click', function() {
+            let value = parseInt(newInput.value);
+            if (value > 1) {
+                newInput.value = value - 1;
+                newInput.dispatchEvent(new Event('change'));
+                
+                // Call global updatePrice if it exists
+                if (typeof updatePrice === 'function') {
+                    updatePrice();
+                }
+            }
+        });
+        
+        increaseBtn.addEventListener('click', function() {
+            let value = parseInt(newInput.value);
+            if (value < 100) {
+                newInput.value = value + 1;
+                newInput.dispatchEvent(new Event('change'));
+                
+                // Call global updatePrice if it exists
+                if (typeof updatePrice === 'function') {
+                    updatePrice();
+                }
+            }
+        });
+        
+        newInput.addEventListener('input', function() {
+            let value = parseInt(this.value);
+            this.value = Math.max(1, Math.min(100, value || 1));
+            
+            // Call global updatePrice if it exists
+            if (typeof updatePrice === 'function') {
+                updatePrice();
+            }
+        });
+    });
+});
+</script>
+
+<script>
+// Quantity Buttons Logic
+document.addEventListener('DOMContentLoaded', function() {
+    const quantityContainers = document.querySelectorAll('.quantity-container');
+    
+    quantityContainers.forEach(container => {
+        const input = container.querySelector('.quantity-input');
+        const decreaseBtn = container.querySelector('.decrease');
+        const increaseBtn = container.querySelector('.increase');
+        
+        decreaseBtn.addEventListener('click', function() {
+            let value = parseInt(input.value);
+            if (value > parseInt(input.getAttribute('min') || 1)) {
+                input.value = value - 1;
+                input.dispatchEvent(new Event('change'));
+            }
+        });
+        
+        increaseBtn.addEventListener('click', function() {
+            let value = parseInt(input.value);
+            input.value = value + 1;
+            input.dispatchEvent(new Event('change'));
+        });
+        
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.blur();
+            }
+        });
+        
+        input.addEventListener('blur', function() {
+            let value = parseInt(this.value);
+            const min = parseInt(this.getAttribute('min') || 1);
+            if (isNaN(value) || value < min) {
+                this.value = min;
+            }
+        });
+    });
+});
+</script>
+
+<style>
+/* Quantity Controls - Complete Rebuild */
+.quantity-container {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    max-width: 110px;
+}
+
+.quantity-btn {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ddd;
+    background-color: #f8f8f8;
+    position: relative;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.quantity-btn:hover {
+    background-color: #eaeaea;
+}
+
+.quantity-btn:active {
+    background-color: #e0e0e0;
+}
+
+.quantity-btn.decrease:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 2px;
+    background-color: #333;
+    transform: translate(-50%, -50%);
+}
+
+.quantity-btn.increase:before,
+.quantity-btn.increase:after {
+    content: "";
+    position: absolute;
+    background-color: #333;
+    top: 50%;
+    left: 50%;
+}
+
+.quantity-btn.increase:before {
+    width: 10px;
+    height: 2px;
+    transform: translate(-50%, -50%);
+}
+
+.quantity-btn.increase:after {
+    width: 2px;
+    height: 10px;
+    transform: translate(-50%, -50%);
+}
+
+.quantity-input {
+    width: 50px;
+    height: 30px;
+    border: 1px solid #ddd;
+    text-align: center;
+    font-size: 14px;
+    margin: 0;
+    padding: 0 5px;
+}
+
+/* Fix for Firefox */
+.quantity-input::-webkit-inner-spin-button, 
+.quantity-input::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.quantity-input {
+    -moz-appearance: textfield;
+}
+</style>
+
+<style>
+/* Fix for double signs in quantity buttons */
+.quantity-btn {
+    font-size: 0;  /* Hide any text content */
+}
+
+.quantity-btn i {
+    display: none !important;  /* Hide any icon elements */
+}
+
+.quantity-btn::before,
+.quantity-btn::after {
+    display: none;  /* Hide any existing pseudo elements */
+}
+
+.quantity-btn.decrease::before {
+    display: block !important;
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 2px;
+    background-color: #333;
+    transform: translate(-50%, -50%);
+}
+
+.quantity-btn.increase::before,
+.quantity-btn.increase::after {
+    display: block !important;
+    content: "";
+    position: absolute;
+    background-color: #333;
+    top: 50%;
+    left: 50%;
+}
+
+.quantity-btn.increase::before {
+    width: 10px;
+    height: 2px;
+    transform: translate(-50%, -50%);
+}
+
+.quantity-btn.increase::after {
+    width: 2px;
+    height: 10px;
+    transform: translate(-50%, -50%);
+}
+</style>
+
+<script>
+// Clean quantity buttons
+document.addEventListener('DOMContentLoaded', function() {
+    // Remove any icons from quantity buttons to prevent double signs
+    document.querySelectorAll('.quantity-btn').forEach(btn => {
+        // Remove all children (icons, etc)
+        while (btn.firstChild) {
+            btn.removeChild(btn.firstChild);
+        }
+    });
+});
+</script>
+
+<style>
+/* Definitive quantity control styling - replaces all previous implementations */
+.quantity-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+}
+
+.quantity-btn {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 4px !important;
+    background-color: #545454 !important;
+    border: none !important;
+    position: relative !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    /* Important: No inner content */
+    font-size: 0 !important;
+    line-height: 0 !important;
+    text-indent: -9999px !important;
+    overflow: hidden !important;
+}
+
+/* Hide all possible inner content including icons and pseudo-elements */
+.quantity-btn::before,
+.quantity-btn::after,
+.quantity-btn i,
+.quantity-btn span,
+.quantity-btn * {
+    display: none !important;
+}
+
+/* Create single minus sign with CSS */
+.quantity-btn.decrease::before {
+    display: block !important;
+    content: "" !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: 12px !important;
+    height: 2px !important;
+    background-color: white !important;
+    transform: translate(-50%, -50%) !important;
+}
+
+/* Create single plus sign with CSS */
+.quantity-btn.increase::before,
+.quantity-btn.increase::after {
+    display: block !important;
+    content: "" !important;
+    position: absolute !important;
+    background-color: white !important;
+    top: 50% !important;
+    left: 50% !important;
+}
+
+.quantity-btn.increase::before {
+    width: 12px !important;
+    height: 2px !important;
+    transform: translate(-50%, -50%) !important;
+}
+
+.quantity-btn.increase::after {
+    width: 2px !important;
+    height: 12px !important;
+    transform: translate(-50%, -50%) !important;
+}
+
+.quantity-input {
+    width: 60px !important;
+    height: 40px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    text-align: center !important;
+    font-size: 16px !important;
+    padding: 0 8px !important;
+    margin: 0 !important;
+}
+
+/* Remove browser's default spinners */
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+}
+
+.quantity-input[type=number] {
+    -moz-appearance: textfield !important;
+}
+</style>
+
+<!-- Add this script to ensure all buttons are cleared of content -->
+<script>
+// Final cleanup to prevent double signs
+document.addEventListener('DOMContentLoaded', function() {
+    // Clear any icons or content from quantity buttons
+    document.querySelectorAll('.quantity-btn').forEach(btn => {
+        btn.innerHTML = '';
+    });
+});
+</script>
+
+<!-- Add this at the end of the file, before the closing body tag -->
+<!-- Offer Request Modal -->
+<div class="modal fade" id="offerRequestModal" tabindex="-1" role="dialog" aria-labelledby="offerRequestModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="offerRequestModalLabel">Zatraži ponudu</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="offerRequestForm" method="post" action="<?php echo site_url('home/submit_offer_request'); ?>">
+          <div class="form-group">
+            <label for="name">Ime i prezime*</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email adresa*</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="phone">Telefon*</label>
+            <input type="tel" class="form-control" id="phone" name="phone" required>
+          </div>
+          <div class="form-group">
+            <label for="company">Tvrtka</label>
+            <input type="text" class="form-control" id="company" name="company">
+          </div>
+          <div class="form-group">
+            <label for="message">Poruka/zahtjev</label>
+            <textarea class="form-control" id="message" name="message" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="address">Adresa</label>
+            <input type="text" class="form-control" id="address" name="address">
+          </div>
+          <div class="form-group">
+            <label for="city">Grad</label>
+            <input type="text" class="form-control" id="city" name="city">
+          </div>
+          <div class="form-group">
+            <label for="zip">Poštanski broj</label>
+            <input type="text" class="form-control" id="zip" name="zip">
+          </div>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+            <label class="form-check-label" for="terms">Prihvaćam <a href="#" target="_blank">uvjete korištenja</a> i politiku privatnosti*</label>
+          </div>
+          <input type="hidden" id="product_id" name="product_id" value="<?php echo isset($module_product['id']) ? $module_product['id'] : (isset($product->id) ? $product->id : '0'); ?>">
+          <input type="hidden" id="product_name" name="product_name" value="<?php echo isset($module_product['product_name']) ? $module_product['product_name'] : (isset($product->name) ? $product->name : ''); ?>">
+          <input type="hidden" id="product_price" name="product_price" value="<?php echo isset($module_product['rate']) ? $module_product['rate'] : (isset($product->rate) ? $product->rate : '0'); ?>">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Odustani</button>
+        <button type="button" class="btn btn-primary" id="submitOfferRequest">Pošalji upit</button>
+        <button type="submit" class="btn btn-primary d-none" id="regularSubmitBtn">Pošalji upit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Offer Request Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Show the regular submit button as a fallback if JavaScript fails or is disabled
+    const regularSubmitBtn = document.getElementById('regularSubmitBtn');
+    if (regularSubmitBtn) {
+        regularSubmitBtn.classList.remove('d-none');
+    }
+    
+    // Handle form submission via AJAX
+    const submitOfferRequestBtn = document.getElementById('submitOfferRequest');
+    if (submitOfferRequestBtn) {
+        submitOfferRequestBtn.addEventListener('click', function() {
+            const form = document.getElementById('offerRequestForm');
+            
+            // Basic validation
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            // Get form data
+            const formData = new FormData(form);
+            
+            // Add selected material, glass, height if applicable
+            const selectedMaterialEl = document.querySelector('.material-option.selected-material');
+            const selectedGlassEl = document.querySelector('.glass-option.selected-glass');
+            const selectedHeightEl = document.querySelector('.height-option.selected-height');
+            
+            const selectedMaterial = selectedMaterialEl ? selectedMaterialEl.dataset.attrib || '' : '';
+            const selectedGlass = selectedGlassEl ? selectedGlassEl.dataset.attrib || '' : '';
+            const selectedHeight = selectedHeightEl ? selectedHeightEl.dataset.attrib || '' : '';
+            
+            formData.append('selected_material', selectedMaterial);
+            formData.append('selected_glass', selectedGlass);
+            formData.append('selected_height', selectedHeight);
+            
+            // Get the quantity
+            const quantityInput = document.querySelector('.quantity-input');
+            const quantity = quantityInput ? Math.max(1, parseInt(quantityInput.value) || 1) : 1;
+            formData.append('quantity', quantity);
+            
+            // Get CSRF token
+            const csrfToken = '<?php echo $this->security->get_csrf_hash(); ?>';
+            const csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>';
+            formData.append(csrfName, csrfToken);
+            
+            // Display loading state
+            submitOfferRequestBtn.disabled = true;
+            submitOfferRequestBtn.innerHTML = 'Slanje...';
+            
+            // Send the AJAX request
+            $.ajax({
+                url: '<?php echo site_url('home/submit_offer_request'); ?>',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    try {
+                        const result = typeof response === 'string' ? JSON.parse(response) : response;
+                        
+                        if (result.success) {
+                            // Hide modal
+                            $('#offerRequestModal').modal('hide');
+                            
+                            // Show short success message
+                            alert('Vaš zahtjev za ponudu je uspješno poslan!');
+                            
+                            // Reset form
+                            form.reset();
+                            
+                            // Redirect to the thank you page
+                            window.location.href = result.redirect_url;
+                        } else {
+                            // Show error message
+                            alert(result.message || 'Došlo je do greške prilikom slanja upita. Molimo pokušajte ponovno.');
+                        }
+                    } catch (e) {
+                        alert('Došlo je do greške prilikom slanja upita. Molimo pokušajte ponovno.');
+                    }
+                    
+                    // Reset button state
+                    submitOfferRequestBtn.disabled = false;
+                    submitOfferRequestBtn.innerHTML = 'Pošalji upit';
+                },
+                error: function(xhr, status, error) {
+                    // Show error message
+                    alert('Došlo je do greške prilikom slanja upita. Molimo pokušajte ponovno.');
+                    
+                    // Reset button state
+                    submitOfferRequestBtn.disabled = false;
+                    submitOfferRequestBtn.innerHTML = 'Pošalji upit';
+                }
+            });
+        });
+    }
+});
+</script>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
+<channel>
+<title>Product Catalog</title>
+<link>https://ograda.hr/</link>
+<description>Product feed for Facebook Catalog</description>
+<item>
+  <g:id>4</g:id>
+  <g:title>Staklena ograda 2</g:title>
+  <g:description>staklena ograda</g:description>
+  <g:link>https://ograda.hr/product/staklena-ograda-2</g:link>
+  <g:image_link>https://ograda.hr/modules/products/uploads/product_4.jpg</g:image_link>
+  <g:availability>in stock</g:availability>
+  <g:price>149.00 EUR</g:price>
+  <g:brand>Profili Zagreb</g:brand>
+  <g:condition>new</g:condition>
+  <g:product_type>Staklene ograde</g:product_type>
+  <g:custom_label_0>Visina: 50cm</g:custom_label_0>
+  <g:custom_label_1>Visina: 120cm</g:custom_label_1>
+  <g:custom_label_2>Visina: 110cm</g:custom_label_2>
+  <g:custom_label_3>Visina: 100cm</g:custom_label_3>
+  <g:custom_label_4>Visina: 90cm</g:custom_label_4>
+</item>
+<item>
+  <g:id>5</g:id>
+  <g:title>Ograda 09</g:title>
+  <g:description>Ograda 09</g:description>
+  <g:link>https://ograda.hr/product/ograda-09</g:link>
+  <g:image_link>https://ograda.hr/modules/products/uploads/product_5.jpg</g:image_link>
+  <g:availability>in stock</g:availability>
+  <g:price>49.00 EUR</g:price>
+  <g:brand>Profili Zagreb</g:brand>
+  <g:condition>new</g:condition>
+  <g:product_type>Čelične ograde</g:product_type>
+  <g:custom_label_0>Vrsta materijala: Aluminij</g:custom_label_0>
+  <g:custom_label_1>Vrsta materijala: Pocinčani čelik</g:custom_label_1>
+  <g:custom_label_2>Visina: 200cm</g:custom_label_2>
+  <g:custom_label_3>Visina: 190cm</g:custom_label_3>
+  <g:custom_label_4>Visina: 180cm</g:custom_label_4>
+</item>
+<item>
+  <g:id>7</g:id>
+  <g:title>Ograda 16</g:title>
+  <g:description>Ograda 16</g:description>
+  <g:link>https://ograda.hr/product/ograda-16</g:link>
+  <g:image_link>https://ograda.hr/modules/products/uploads/product_7.jpg</g:image_link>
+  <g:availability>in stock</g:availability>
+  <g:price>109.00 EUR</g:price>
+  <g:brand>Profili Zagreb</g:brand>
+  <g:condition>new</g:condition>
+  <g:product_type>Aluminijske ograde</g:product_type>
+  <g:custom_label_0>Vrsta materijala: Aluminij</g:custom_label_0>
+  <g:custom_label_1>Visina: 190cm</g:custom_label_1>
+  <g:custom_label_2>Visina: 180cm</g:custom_label_2>
+  <g:custom_label_3>Visina: 170cm</g:custom_label_3>
+  <g:custom_label_4>Visina: 160cm</g:custom_label_4>
+</item>
+<item>
+  <g:id>25</g:id>
+  <g:title>Nehrđajući čelik (inox) stubišna ograda</g:title>
+  <g:description>Naša ograda idealan je izbor za sve koji traže dugotrajno, moderno i estetski privlačno rješenje za svoj dom ili poslovni prostor. Izrađena od visokokvalitetnog materijala, ova ograda pruža vrhunsku o</g:description>
+  <g:link>https://ograda.hr/product/nehrđajući-čelik-inox-stubišna-ograda</g:link>
+  <g:image_link>https://ograda.hr/modules/products/uploads/product_25.jpeg</g:image_link>
+  <g:availability>in stock</g:availability>
+  <g:price>149.00 EUR</g:price>
+  <g:brand>Profili Zagreb</g:brand>
+  <g:condition>new</g:condition>
+  <g:product_type>Inox ograde</g:product_type>
+  <g:custom_label_0>Vrsta materijala: Nehrđajući čelik inox 304</g:custom_label_0>
+  <g:custom_label_1>Visina: 110cm</g:custom_label_1>
+</item>
+<item>
+  <g:id>31</g:id>
+  <g:title>Ograda 31</g:title>
+  <g:description>Debljina stijenke stupova 1.2mm
+Letvice debljine 1.0mm
+
+Razmak između stupova 1500mm
+
+</g:description>
+  <g:link>https://ograda.hr/product/ograda-31</g:link>
+  <g:image_link>https://ograda.hr/modules/products/uploads/product_31.jpg</g:image_link>
+  <g:availability>in stock</g:availability>
+  <g:price>49.00 EUR</g:price>
+  <g:brand>Profili Zagreb</g:brand>
+  <g:condition>new</g:condition>
+  <g:product_type>Čelične ograde</g:product_type>
+  <g:custom_label_0>Vrsta materijala: Pocinčani čelik</g:custom_label_0>
+  <g:custom_label_1>Visina: 190cm</g:custom_label_1>
+  <g:custom_label_2>Visina: 180cm</g:custom_label_2>
+  <g:custom_label_3>Visina: 170cm</g:custom_label_3>
+  <g:custom_label_4>Visina: 160cm</g:custom_label_4>
+</item>
+</channel>
+</rss>
