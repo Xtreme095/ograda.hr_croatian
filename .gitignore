@@ -48,3 +48,6 @@ desktop.ini
 *.sql
 *.tar
 *.gz 
+
+# Files with sensitive information
+ograda.hr/modules/lead_manager/third_party/twilio-web/make_call.php 
