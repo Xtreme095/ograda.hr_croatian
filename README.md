@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
@@ -64,3 +65,53 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+=======
+# Ograda.hr - Croatian Website
+
+This repository contains the Croatian version of Ograda.hr website, a platform for [brief description of what the website does].
+
+## Project Structure
+
+The repository is organized as follows:
+
+- `ograda.hr/` - Main application for the Croatian version
+- `si.ograda.hr/` - Slovenian version of the website (reference only)
+
+## Setup Instructions
+
+### Requirements
+
+- PHP 7.4 or higher
+- MySQL 5.7 or higher
+- Apache/Nginx web server
+- Composer for dependency management
+
+### Local Development Setup
+
+1. Clone this repository to your local environment
+2. Configure your web server to point to the `ograda.hr` directory
+3. Create a database for the application
+4. Copy the configuration files:
+   ```
+   cp ograda.hr/application/config/config.sample.php ograda.hr/application/config/config.php
+   cp ograda.hr/application/config/database.sample.php ograda.hr/application/config/database.php
+   ```
+5. Update the configuration files with your local settings
+6. Install dependencies (if needed):
+   ```
+   cd ograda.hr
+   composer install
+   ```
+7. Import the database schema (if available):
+   ```
+   mysql -u [username] -p [database_name] < schema.sql
+   ```
+
+## Contact
+
+For questions or assistance, please contact [contact information].
+
+## License
+
+[Specify license information] 
+>>>>>>> d52d47db54420dd6b89803ae8c64b05e9ae9df2e

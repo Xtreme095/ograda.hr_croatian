@@ -1,0 +1,53 @@
+# Ignore caches, logs and temporary files
+ograda.hr/application/cache/*
+!ograda.hr/application/cache/index.html
+!ograda.hr/application/cache/.htaccess
+
+ograda.hr/application/logs/*
+!ograda.hr/application/logs/index.html
+!ograda.hr/application/logs/.htaccess
+
+ograda.hr/temp/*
+!ograda.hr/temp/.htaccess
+!ograda.hr/temp/index.html
+
+# Ignore uploaded files which are large and user-specific
+ograda.hr/uploads/*
+!ograda.hr/uploads/index.html
+!ograda.hr/uploads/.htaccess
+!ograda.hr/uploads/*/index.html
+
+# Ignore configuration files that may contain sensitive information
+ograda.hr/application/config/config.php
+ograda.hr/application/config/database.php
+
+# Ignore vendor libraries and third-party dependencies
+ograda.hr/application/vendor/
+ograda.hr/assets/builds/
+ograda.hr/assets/plugins/
+
+# Ignore OS specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ignore editor files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.komodoproject
+.komodotools/
+*.swp
+*~
+
+# Other files to ignore
+*.log
+*.zip
+*.rar
+*.sql
+*.tar
+*.gz 
+
+# Files with sensitive information
+ograda.hr/modules/lead_manager/third_party/twilio-web/make_call.php 

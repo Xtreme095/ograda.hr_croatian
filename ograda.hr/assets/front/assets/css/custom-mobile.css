@@ -1,0 +1,41 @@
+/* Custom mobile styles for product catalog */
+@media (max-width: 767px) {
+    /* Make main products match recommended/recently viewed */
+    .products-container .product-default.inner-quickview {
+        background-color: #fff;
+    }
+    
+    .products-container .product-default figure {
+        margin-bottom: 10px;
+    }
+    
+    .products-container .product-default figure img {
+        height: auto !important;
+        max-height: 250px;
+        object-fit: contain !important;
+        width: 100%;
+    }
+    
+    .products-container .col-6 {
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .products-container .product-details {
+        padding: 0;
+    }
+    
+    .products-container .product-title {
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+    
+    .products-container .category-list {
+        font-size: 12px;
+    }
+    
+    .products-container .product-price {
+        font-size: 16px;
+    }
+} 
